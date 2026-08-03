@@ -1,0 +1,84 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Store, Mail, Phone, MapPin, Linkedin, Twitter, Facebook } from 'lucide-react';
+
+export default function Footer() {
+  return (
+    <footer className="border-t border-slate-200/60 bg-white text-slate-600 dark:border-slate-850 dark:bg-dark-bg dark:text-slate-400 transition-colors duration-200">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          {/* Brand Info */}
+          <div className="flex flex-col gap-4">
+            <Link to="/" className="flex items-center gap-2 font-bold text-xl text-emerald-600 dark:text-emerald-500">
+              <Store className="h-6 w-6" />
+              <span>Foodie<span className="text-slate-800 dark:text-white">Wholesale</span></span>
+            </Link>
+            <p className="text-xs leading-relaxed text-slate-500">
+              The premier B2B Wholesale Marketplace. Enforcing minimum order quantities (MOQ) to connect high-volume distributors with bulk retail discounts.
+            </p>
+            <div className="flex gap-3 text-slate-400 dark:text-slate-500 mt-2">
+              <Facebook className="h-4 w-4 hover:text-emerald-500 cursor-pointer" />
+              <Twitter className="h-4 w-4 hover:text-emerald-500 cursor-pointer" />
+              <Linkedin className="h-4 w-4 hover:text-emerald-500 cursor-pointer" />
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
+              Company
+            </h3>
+            <ul className="flex flex-col gap-2.5 text-xs">
+              <li><Link to="/about" className="hover:text-emerald-500">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-emerald-500">Contact Us</Link></li>
+              <li><Link to="/faq" className="hover:text-emerald-500">FAQ / Help</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal / Wholesale */}
+          <div>
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
+              Policies
+            </h3>
+            <ul className="flex flex-col gap-2.5 text-xs">
+              <li><Link to="/privacy-policy" className="hover:text-emerald-500">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-emerald-500">Terms & Conditions</Link></li>
+              <li><Link to="/faq" className="hover:text-emerald-500">Wholesale MOQ Rules</Link></li>
+            </ul>
+          </div>
+
+          {/* Contacts */}
+          <div>
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
+              Support Desk
+            </h3>
+            <ul className="flex flex-col gap-3 text-xs">
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-slate-400" />
+                <span>support@foodie.com</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-slate-400" />
+                <span>+1 (888) 555-0199</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <MapPin className="h-4 w-4 text-slate-400 mt-0.5" />
+                <span>100 Business Parkway,<br />Suite 500, New York, NY</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div className="border-t border-slate-100 dark:border-slate-850 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-slate-500">
+          <span>&copy; {new Date().getFullYear()} Foodie Wholesale LLC. All rights reserved.</span>
+          <span className="flex gap-4">
+            <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
+            <Link to="/terms" className="hover:underline">Terms</Link>
+          </span>
+        </div>
+      </div>
+    </footer>
+  );
+}
