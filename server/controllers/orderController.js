@@ -113,7 +113,7 @@ const processOrderForClient = (order, currentUserId) => {
   return orderObj;
 };
 
-// @desc    Create a new order (with MOQ/wholesale calculations)
+// @desc    Create a new order
 //          For Razorpay: returns razorpayOrderId + key_id so frontend can open checkout
 // @route   POST /api/orders
 // @access  Private
@@ -145,25 +145,26 @@ export const createOrder = async (req, res, next) => {
       }
 
       let price = product.price;
-      let wholesaleApplied = false;
 
-      if (item.quantity >= product.minimumOrderQuantity) {
-        price = product.wholesalePrice;
-        wholesaleApplied = true;
-      }
-
-      if (!wholesaleApplied && product.discount > 0) {
+      if (product.discount > 0) {
         price = price - price * (product.discount / 100);
       }
 
+      // BUG FIX: Round price to 2 decimals to prevent floating-point precision
+      // issues that can cause Mongoose 8 subdocument validation to silently fail.
+      price = Math.round(price * 100) / 100;
+
       subTotal += price * item.quantity;
 
+      // BUG FIX: Convert product._id to a plain ObjectId string then back,
+      // to strip the Mongoose document wrapper. In Mongoose 8, passing a
+      // Mongoose-wrapped _id directly into a subdocument can cause the
+      // subdocument to silently fail validation during create().
       finalItems.push({
-        productId: product._id,
-        productName: product.productName,
-        quantity: item.quantity,
-        price,
-        wholesaleApplied,
+        productId: product._id.toString(),
+        productName: String(product.productName),
+        quantity: Number(item.quantity),
+        price: Number(price),
       });
     }
 
@@ -183,8 +184,14 @@ export const createOrder = async (req, res, next) => {
     const totalAmount = Math.max(0, subTotal - discountAmount + shippingCharges);
     const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-    // Persist the order (status stays Pending until payment is verified)
-    const order = await Order.create({
+    // DEBUG: Log finalItems before order creation to verify data types
+    console.log("[DEBUG] finalItems before Order creation:", JSON.stringify(finalItems, null, 2));
+
+    // BUG FIX: Use new Order() + validate() + save() instead of Order.create().
+    // Order.create() in Mongoose 8 can silently discard subdocument array entries
+    // that fail validation without throwing an error. By calling validate() first,
+    // any hidden validation errors on the items subdocuments will be surfaced.
+    const order = new Order({
       userId: req.user.id,
       items: finalItems,
       shippingAddress,
@@ -199,6 +206,25 @@ export const createOrder = async (req, res, next) => {
       statusHistory: [{ status: 'Pending', timestamp: new Date() }],
       trackingTimeline: [{ status: 'Order Placed', timestamp: new Date(), isCompleted: true }],
     });
+
+    // DEBUG: Log the order document BEFORE saving to check if items were accepted
+    console.log("[DEBUG] Order document BEFORE save - items count:", order.items.length);
+    console.log("[DEBUG] Order document BEFORE save - items:", JSON.stringify(order.items, null, 2));
+
+    // Validate explicitly to catch any hidden subdocument validation errors
+    await order.validate();
+
+    // Save to database
+    await order.save();
+
+    // DEBUG: Log the order document AFTER saving
+    console.log("[DEBUG] Order document AFTER save - items count:", order.items.length);
+    console.log("[DEBUG] Order document AFTER save - items:", JSON.stringify(order.items, null, 2));
+
+    // DEBUG: Direct database query to verify what was actually stored in MongoDB
+    const dbCheck = await Order.findById(order._id).lean();
+    console.log("[DEBUG] Direct DB query - items count:", dbCheck.items.length);
+    console.log("[DEBUG] Direct DB query - items:", JSON.stringify(dbCheck.items, null, 2));
 
     // ── Razorpay: create a server-side Razorpay Order ──────────────────────
     let razorpayOrder = null;
@@ -450,11 +476,10 @@ export const updateOrderStatus = async (req, res, next) => {
     await Notification.create({
       userId: order.userId,
       title: `Order Status Updated: ${status || order.status}`,
-      message: status === 'Out For Delivery' 
+      message: status === 'Out For Delivery'
         ? `Your order ${order.invoiceNumber} is out for delivery. Check your dashboard for the OTP.`
-        : `Your order ${order.invoiceNumber} has been updated to: ${status || order.status}. ${
-            trackingNumber ? 'Tracking No: ' + trackingNumber : ''
-          }`,
+        : `Your order ${order.invoiceNumber} has been updated to: ${status || order.status}. ${trackingNumber ? 'Tracking No: ' + trackingNumber : ''
+        }`,
       type: 'order',
     });
 
@@ -670,7 +695,7 @@ async function _postPaymentActions(order, user, finalItems, rawCartItems) {
   for (const sellerId of sellerIds) {
     await Notification.create({
       userId: sellerId,
-      title: 'New Wholesale Order Received',
+      title: 'New Order Received',
       message: 'You have received a new order. Check your Seller Dashboard for order details.',
       type: 'order',
     });

@@ -9,10 +9,10 @@ import API from '../services/api.js';
 export default function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
-  
+
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -106,8 +106,11 @@ export default function Navbar() {
   // Add query to Local search history
   const addQueryToHistory = (query) => {
     const trimmed = query.trim();
+    // trimmed represent the search query name 
+    // search history represent the array of search queries 
     if (!trimmed) return;
     const updated = [trimmed, ...searchHistory.filter(q => q !== trimmed)].slice(0, 8);
+    console.log(updated);
     setSearchHistory(updated);
     localStorage.setItem('searchHistory', JSON.stringify(updated));
   };
@@ -122,6 +125,7 @@ export default function Navbar() {
   };
 
   const handleSuggestionClick = (type, value) => {
+    // type is represent product , category and brands . value is represent id of product , category and brand name 
     setIsSearchFocused(false);
     if (type === 'product') {
       navigate(`/products/${value._id}`);
@@ -152,7 +156,7 @@ export default function Navbar() {
     const parts = text.split(regex);
     return (
       <span>
-        {parts.map((part, index) => 
+        {parts.map((part, index) =>
           regex.test(part) ? (
             <strong key={index} className="text-emerald-600 dark:text-emerald-450 font-bold">{part}</strong>
           ) : (
@@ -194,7 +198,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-dark-bg/85 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
-          
+
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-emerald-600 dark:text-emerald-500">
             <Store className="h-6 w-6" />
@@ -246,11 +250,11 @@ export default function Navbar() {
                       </div>
                     )}
 
-                    {/* Trending Searches */}
+                    {/* Frequently Searched */}
                     {trending.length > 0 && (
                       <div>
                         <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1">
-                          <TrendingUp className="h-3 w-3" /> Trending Wholesale Queries
+                          <TrendingUp className="h-3 w-3" /> Frequently Searched
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {trending.map((item, index) => (
@@ -331,7 +335,7 @@ export default function Navbar() {
                                   {highlightMatch(prod.productName, searchQuery)}
                                 </p>
                                 <p className="text-[10px] text-slate-450 mt-0.5">
-                                  Wholesale: <span className="text-emerald-600 font-bold">${prod.wholesalePrice}</span> • Retail: ${prod.price}
+                                  Price: <span className="text-emerald-600 font-bold">₹{prod.price}</span>
                                 </p>
                               </div>
                             </div>
@@ -341,12 +345,12 @@ export default function Navbar() {
                     )}
 
                     {suggestions.categories.length === 0 &&
-                     suggestions.brands.length === 0 &&
-                     suggestions.products.length === 0 && (
-                      <div className="text-center py-4 text-xs text-slate-400">
-                        No matches found.
-                      </div>
-                    )}
+                      suggestions.brands.length === 0 &&
+                      suggestions.products.length === 0 && (
+                        <div className="text-center py-4 text-xs text-slate-400">
+                          No matches found.
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
@@ -355,7 +359,7 @@ export default function Navbar() {
 
           {/* Actions - Desktop */}
           <div className="hidden lg:flex items-center gap-4">
-            
+
             {/* Theme Toggle */}
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -366,7 +370,7 @@ export default function Navbar() {
 
             {/* Catalog Link */}
             <Link to="/products" className="text-sm font-medium hover:text-emerald-600 dark:hover:text-emerald-400">
-              Browse Wholesale
+              Browse Products
             </Link>
 
             {isAuthenticated ? (
@@ -546,103 +550,291 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 dark:border-slate-800 dark:bg-dark-bg flex flex-col gap-4">
-          <form onSubmit={handleSearchSubmit} className="relative w-full">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 dark:bg-dark-card dark:border-slate-800"
-            />
-            <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
-          </form>
+        <div
+          className="
+      lg:hidden
+      absolute
+      top-full
+      left-0
+      w-full
+      z-50
+      animate-in
+      slide-in-from-top-3
+      fade-in
+      duration-300
+      origin-top
+      rounded-b-3xl
+      border-t
+      border-slate-200
+      bg-white/95
+      backdrop-blur-xl
+      shadow-2xl
+      dark:bg-dark-bg/95
+      dark:border-slate-800
+    "
+        >
+          <div className="max-h-[calc(100vh-80px)] overflow-y-auto px-5 py-5">
 
-          <Link
-            to="/products"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="text-sm font-medium py-1 border-b border-slate-100 dark:border-slate-850"
-          >
-            Browse Products
-          </Link>
+            {/* Search */}
+            <form onSubmit={handleSearchSubmit} className="relative mb-5">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
 
-          {isAuthenticated ? (
-            <>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="
+            w-full
+            rounded-full
+            border
+            border-slate-200
+            bg-slate-50
+            py-3
+            pl-11
+            pr-4
+            text-sm
+            outline-none
+            transition-all
+            duration-300
+            focus:border-emerald-500
+            focus:ring-4
+            focus:ring-emerald-100
+            dark:bg-dark-card
+            dark:border-slate-800
+            dark:focus:ring-emerald-900/30
+          "
+              />
+            </form>
+
+            {/* Navigation */}
+            <div className="space-y-2">
+
               <Link
-                to="/cart"
+                to="/products"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium py-1 border-b border-slate-100 dark:border-slate-850 flex items-center justify-between"
+                className="
+            hidden lg:flex items-center
+            rounded-xl
+            px-4
+            py-3
+            text-sm
+            font-medium
+            transition-all
+            duration-200
+            hover:bg-emerald-50
+            hover:text-emerald-600
+            dark:hover:bg-slate-800
+          "
               >
-                <span>Shopping Cart</span>
-                <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  {items.reduce((acc, curr) => acc + curr.quantity, 0)} Items
-                </span>
+                Browse Products
               </Link>
-              <Link
-                to="/wishlist"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium py-1 border-b border-slate-100 dark:border-slate-850"
-              >
-                Wishlist
-              </Link>
-              <Link
-                to="/my-orders"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium py-1 border-b border-slate-100 dark:border-slate-850"
-              >
-                My Orders
-              </Link>
-              <Link
-                to="/profile"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-sm font-medium py-1 border-b border-slate-100 dark:border-slate-850"
-              >
-                Account Profile
-              </Link>
-              {user.role === 'admin' && (
-                <Link
-                  to="/admin"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-sm font-medium py-1 border-b border-slate-100 dark:border-slate-850 text-emerald-600 dark:text-emerald-450"
-                >
-                  Admin Console
-                </Link>
+
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/cart"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="
+                flex
+                items-center
+                justify-between
+                rounded-xl
+                px-4
+                py-3
+                text-sm
+                font-medium
+                transition-all
+                duration-200
+                hover:bg-emerald-50
+                hover:text-emerald-600
+                dark:hover:bg-slate-800
+              "
+                  >
+                    <span>Shopping Cart</span>
+
+                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
+                      {items.reduce((acc, curr) => acc + curr.quantity, 0)}
+                    </span>
+                  </Link>
+
+                  <Link
+                    to="/wishlist"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="
+                flex items-center
+                rounded-xl
+                px-4
+                py-3
+                text-sm
+                font-medium
+                transition-all
+                duration-200
+                hover:bg-emerald-50
+                hover:text-emerald-600
+                dark:hover:bg-slate-800
+              "
+                  >
+                    Wishlist
+                  </Link>
+
+                  <Link
+                    to="/my-orders"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="
+                flex items-center
+                rounded-xl
+                px-4
+                py-3
+                text-sm
+                font-medium
+                transition-all
+                duration-200
+                hover:bg-emerald-50
+                hover:text-emerald-600
+                dark:hover:bg-slate-800
+              "
+                  >
+                    My Orders
+                  </Link>
+
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="
+                flex items-center
+                rounded-xl
+                px-4
+                py-3
+                text-sm
+                font-medium
+                transition-all
+                duration-200
+                hover:bg-emerald-50
+                hover:text-emerald-600
+                dark:hover:bg-slate-800
+              "
+                  >
+                    Account Profile
+                  </Link>
+
+                  {user.role === "admin" && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="
+                  flex items-center
+                  rounded-xl
+                  bg-emerald-50
+                  px-4
+                  py-3
+                  text-sm
+                  font-semibold
+                  text-emerald-600
+                  transition
+                  hover:bg-emerald-100
+                  dark:bg-emerald-950/40
+                "
+                    >
+                      Admin Console
+                    </Link>
+                  )}
+
+                  {user.role === "seller" && (
+                    <Link
+                      to="/seller"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="
+                  flex items-center
+                  rounded-xl
+                  bg-emerald-50
+                  px-4
+                  py-3
+                  text-sm
+                  font-semibold
+                  text-emerald-600
+                  transition
+                  hover:bg-emerald-100
+                  dark:bg-emerald-950/40
+                "
+                    >
+                      Seller Dashboard
+                    </Link>
+                  )}
+
+                  <div className="my-4 border-t border-slate-200 dark:border-slate-800"></div>
+
+                  <button
+                    onClick={handleLogout}
+                    className="
+                flex
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                bg-red-50
+                py-3
+                text-sm
+                font-semibold
+                text-red-600
+                transition-all
+                duration-200
+                hover:bg-red-100
+                active:scale-95
+                dark:bg-red-950/40
+              "
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <div className="mt-4 space-y-3">
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="
+                flex
+                justify-center
+                rounded-full
+                border
+                border-slate-300
+                py-3
+                text-sm
+                font-semibold
+                transition
+                hover:bg-slate-100
+                dark:border-slate-700
+                dark:hover:bg-slate-800
+              "
+                  >
+                    Log In
+                  </Link>
+
+                  <Link
+                    to="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="
+                flex
+                justify-center
+                rounded-full
+                bg-emerald-600
+                py-3
+                text-sm
+                font-semibold
+                text-white
+                transition
+                hover:bg-emerald-700
+                active:scale-95
+              "
+                  >
+                    Register
+                  </Link>
+                </div>
               )}
-              {user.role === 'seller' && (
-                <Link
-                  to="/seller"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-sm font-medium py-1 border-b border-slate-100 dark:border-slate-850 text-emerald-600 dark:text-emerald-450"
-                >
-                  Seller Dashboard
-                </Link>
-              )}
-              <button
-                onClick={handleLogout}
-                className="flex w-full items-center gap-2 py-2 text-sm text-red-600 font-semibold"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </button>
-            </>
-          ) : (
-            <div className="flex flex-col gap-2 pt-2">
-              <Link
-                to="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex justify-center py-2 text-sm font-semibold rounded-full border border-slate-200 dark:border-slate-800"
-              >
-                Log In
-              </Link>
-              <Link
-                to="/register"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex justify-center py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-full"
-              >
-                Register
-              </Link>
             </div>
-          )}
+          </div>
         </div>
       )}
     </nav>

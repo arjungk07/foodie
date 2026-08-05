@@ -14,8 +14,7 @@ const orderSchema = new mongoose.Schema({
     },
     productName: { type: String, required: true },
     quantity: { type: Number, required: true },
-    price: { type: Number, required: true },
-    wholesaleApplied: { type: Boolean, default: false }
+    price: { type: Number, required: true }
   }],
   shippingAddress: {
     fullName: { type: String, required: true },

@@ -93,9 +93,8 @@ export default function Checkout() {
   items.forEach((item) => {
     const p = item.productId;
     if (!p) return;
-    const isWholesaleActive = item.quantity >= p.minimumOrderQuantity;
-    let price = isWholesaleActive ? p.wholesalePrice : p.price;
-    if (!isWholesaleActive && p.discount > 0) price = price - price * (p.discount / 100);
+    let price = p.price;
+    if (p.discount > 0) price = price - price * (p.discount / 100);
     subTotal += price * item.quantity;
   });
 
@@ -166,7 +165,7 @@ export default function Checkout() {
         key: razorpayKeyId,
         amount,            // in paise
         currency,
-        name: 'Foodie Wholesale',
+        name: 'Foodie',
         description: `Order #${data.order.invoiceNumber}`,
         order_id: razorpayOrderId,
         prefill: {
@@ -237,7 +236,7 @@ export default function Checkout() {
 
       <h1 className="text-2xl font-black mt-4 flex items-center gap-2">
         <ShieldCheck className="h-6 w-6 text-emerald-500" />
-        <span>Secure B2B Checkout</span>
+        <span>Secure Checkout</span>
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
@@ -253,7 +252,7 @@ export default function Checkout() {
             </h2>
 
             {addresses.length === 0 ? (
-              <p className="text-xs text-slate-400">No saved addresses. Please enter a shipping address below.</p>
+              <p className="text-xs text-slate-400 mb-2">No saved addresses. Please enter a shipping address below.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 {addresses.map((addr) => (
@@ -407,8 +406,8 @@ export default function Checkout() {
               {items.map((item) => {
                 const p = item.productId;
                 if (!p) return null;
-                const isWholesaleActive = item.quantity >= p.minimumOrderQuantity;
-                const unitPrice = isWholesaleActive ? p.wholesalePrice : p.price;
+                let unitPrice = p.price;
+                if (p.discount > 0) unitPrice = p.price - (p.price * (p.discount / 100));
                 return (
                   <div key={item._id} className="flex justify-between items-start text-xs border-b border-slate-50 dark:border-slate-900 pb-2">
                     <div className="max-w-[70%]">

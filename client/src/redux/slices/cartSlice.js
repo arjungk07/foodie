@@ -68,6 +68,16 @@ const cartSlice = createSlice({
     },
     resetCoupon: (state) => {
       state.activeCoupon = null;
+    },
+    updateItemQuantityOptimistic: (state, action) => {
+      const { productId, quantity } = action.payload;
+      const item = state.items.find(i => {
+        const id = i.productId?._id ? i.productId._id.toString() : i.productId.toString();
+        return id === productId.toString();
+      });
+      if (item) {
+        item.quantity = quantity;
+      }
     }
   },
   extraReducers: (builder) => {
@@ -78,7 +88,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload.items || [];
+        state.items = action.payload?.items || [];
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
@@ -86,15 +96,18 @@ const cartSlice = createSlice({
       })
       // Add to Cart
       .addCase(addToCart.fulfilled, (state, action) => {
-        state.items = action.payload.items || [];
+        state.items = action.payload?.items || [];
       })
       // Update Qty
       .addCase(updateCartQty.fulfilled, (state, action) => {
-        state.items = action.payload.items || [];
+        state.items = action.payload?.items || [];
+      })
+      .addCase(updateCartQty.rejected, (state, action) => {
+        state.error = action.payload;
       })
       // Remove
       .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.items = action.payload.items || [];
+        state.items = action.payload?.items || [];
       })
       // Validate Coupon
       .addCase(validateCoupon.fulfilled, (state, action) => {
@@ -108,5 +121,5 @@ const cartSlice = createSlice({
   }
 });
 
-export const { clearCartErrors, resetCoupon } = cartSlice.actions;
+export const { clearCartErrors, resetCoupon, updateItemQuantityOptimistic } = cartSlice.actions;
 export default cartSlice.reducer;

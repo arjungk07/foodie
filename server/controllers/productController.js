@@ -9,21 +9,19 @@ import { uploadImage, deleteImage, CLOUDINARY_FOLDERS } from '../config/cloudina
 // @access  Public
 export const getProducts = async (req, res, next) => {
   try {
-    const { 
-      search, 
-      category, 
+    const {
+      search,
+      category,
       subCategory,
-      minPrice, 
-      maxPrice, 
-      minWholesalePrice, 
-      maxWholesalePrice, 
-      brand, 
-      rating, 
-      availability, 
+      minPrice,
+      maxPrice,
+      brand,
+      rating,
+      availability,
       discount,
-      sort, 
-      page = 1, 
-      limit = 12 
+      sort,
+      page = 1,
+      limit = 12
     } = req.query;
 
     const queryObj = {};
@@ -32,7 +30,7 @@ export const getProducts = async (req, res, next) => {
     if (search) {
       const sanitizedSearch = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       queryObj.productName = { $regex: sanitizedSearch, $options: 'i' };
-      
+
       // Log search query in background for trending tracking
       const trimmedQuery = search.trim().toLowerCase();
       if (trimmedQuery.length > 2) {
@@ -69,13 +67,6 @@ export const getProducts = async (req, res, next) => {
       if (maxPrice) queryObj.price.$lte = Number(maxPrice);
     }
 
-    // Wholesale Price Range Filter
-    if (minWholesalePrice || maxWholesalePrice) {
-      queryObj.wholesalePrice = {};
-      if (minWholesalePrice) queryObj.wholesalePrice.$gte = Number(minWholesalePrice);
-      if (maxWholesalePrice) queryObj.wholesalePrice.$lte = Number(maxWholesalePrice);
-    }
-
     // Min Rating Filter
     if (rating) {
       queryObj.rating = { $gte: Number(rating) };
@@ -101,12 +92,6 @@ export const getProducts = async (req, res, next) => {
           break;
         case 'price-high':
           apiQuery = apiQuery.sort('-price');
-          break;
-        case 'wholesale-low':
-          apiQuery = apiQuery.sort('wholesalePrice');
-          break;
-        case 'wholesale-high':
-          apiQuery = apiQuery.sort('-wholesalePrice');
           break;
         case 'rating':
           apiQuery = apiQuery.sort('-rating');
@@ -185,21 +170,20 @@ export const getProductById = async (req, res, next) => {
 // @access  Private (Seller/Admin)
 export const createProduct = async (req, res, next) => {
   try {
-    const { 
-      productName, 
-      productDescription, 
-      category, 
+    const {
+      productName,
+      productDescription,
+      category,
       subCategory,
-      brand, 
-      SKU, 
-      price, 
-      wholesalePrice, 
-      minimumOrderQuantity, 
-      stock, 
-      specifications, 
+      brand,
+      SKU,
+      price,
+      minimumOrderQuantity,
+      stock,
+      specifications,
       tags,
       discount,
-      featuredProduct 
+      featuredProduct
     } = req.body;
 
     // Verify category exists
@@ -247,7 +231,6 @@ export const createProduct = async (req, res, next) => {
       brand,
       SKU,
       price: Number(price),
-      wholesalePrice: Number(wholesalePrice),
       minimumOrderQuantity: Number(minimumOrderQuantity || 10),
       stock: Number(stock || 0),
       images,
@@ -285,18 +268,17 @@ export const updateProduct = async (req, res, next) => {
       throw new Error('Access denied. You are not authorized to edit this product.');
     }
 
-    const { 
-      productName, 
-      productDescription, 
-      category, 
+    const {
+      productName,
+      productDescription,
+      category,
       subCategory,
-      brand, 
-      SKU, 
-      price, 
-      wholesalePrice, 
-      minimumOrderQuantity, 
-      stock, 
-      specifications, 
+      brand,
+      SKU,
+      price,
+      minimumOrderQuantity,
+      stock,
+      specifications,
       tags,
       discount,
       featuredProduct,
@@ -354,7 +336,6 @@ export const updateProduct = async (req, res, next) => {
     product.brand = brand || product.brand;
     product.SKU = SKU || product.SKU;
     product.price = price !== undefined ? Number(price) : product.price;
-    product.wholesalePrice = wholesalePrice !== undefined ? Number(wholesalePrice) : product.wholesalePrice;
     product.minimumOrderQuantity = minimumOrderQuantity !== undefined ? Number(minimumOrderQuantity) : product.minimumOrderQuantity;
     product.stock = stock !== undefined ? Number(stock) : product.stock;
     product.images = updatedImages;
@@ -441,7 +422,7 @@ export const getSearchSuggestions = async (req, res, next) => {
 
     // 1. Search products
     const products = await Product.find({ productName: regex })
-      .select('productName price wholesalePrice images')
+      .select('productName price images')
       .limit(5);
 
     // 2. Search categories

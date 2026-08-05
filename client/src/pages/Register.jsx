@@ -54,10 +54,10 @@ export default function Register() {
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-2 font-bold text-2xl text-emerald-600 dark:text-emerald-500 mb-2">
             <Store className="h-6 w-6" />
-            <span>Foodie<span className="text-slate-800 dark:text-white">Wholesale</span></span>
+            <span>Foodie</span>
           </Link>
-          <h2 className="text-xl font-bold tracking-tight">Register Business Account</h2>
-          <p className="text-xs text-slate-550 dark:text-slate-400 mt-1">Start sourcing in high volume</p>
+          <h2 className="text-xl font-bold tracking-tight">Register</h2>
+          {/* <p className="text-xs text-slate-550 dark:text-slate-400 mt-1">Start sourcing in high volume</p> */}
         </div>
 
         {/* Role Selector Tabs */}
@@ -71,7 +71,7 @@ export default function Register() {
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            Buyer / Retailer
+            customer
           </button>
           <button
             type="button"
@@ -82,17 +82,17 @@ export default function Register() {
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            Seller / Distributor
+            Seller
           </button>
         </div>
 
         {/* Role Notice */}
-        <div className="flex gap-2 rounded-xl bg-emerald-50/50 p-3 text-[10px] text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-350">
+        <div className="flex gap-2 rounded-xl tracking-wider  bg-emerald-50/50 p-3 text-[11px] text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-350">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500 mt-0.5" />
           <p>
             {role === 'customer' 
-              ? 'Enables shopping bulk inventory, adding addresses, tracking orders, and checking out with Stripe/COD.'
-              : 'Enables catalog product creation, stock updates, inventory checking, and wholesale analytics.'
+              ? 'shop products, add items to your cart or wishlist, save delivery addresses, place orders, and track your order status.'
+              : 'Manage your products, stock, orders, and grow your business.'
             }
           </p>
         </div>
@@ -103,13 +103,13 @@ export default function Register() {
           {/* Company/Full Name */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-slate-655 dark:text-slate-355">
-              {role === 'customer' ? 'Full Name / Representative' : 'Distributor Company Name'}
+              {role === 'customer' ? 'Full Name ' : 'Seller Full Name'}
             </label>
             <div className="relative">
               <input
                 type="text"
                 required
-                placeholder={role === 'customer' ? 'John Doe' : 'Acme Distributors LLC'}
+                placeholder={role === 'customer' ? 'Arjun' : ''}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-55/50 dark:bg-dark-card dark:border-slate-800"
@@ -120,12 +120,12 @@ export default function Register() {
 
           {/* Email */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-655 dark:text-slate-355">Business Email</label>
+            <label className="text-xs font-semibold text-slate-655 dark:text-slate-355">Email</label>
             <div className="relative">
               <input
                 type="email"
                 required
-                placeholder="you@company.com"
+                placeholder="example@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-55/50 dark:bg-dark-card dark:border-slate-800"
@@ -136,12 +136,12 @@ export default function Register() {
 
           {/* Mobile */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-655 dark:text-slate-355">Contact Mobile</label>
+            <label className="text-xs font-semibold text-slate-655 dark:text-slate-355">Mobile No.</label>
             <div className="relative">
               <input
                 type="tel"
                 required
-                placeholder="+1 (555) 000-0000"
+                placeholder=""
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-55/50 dark:bg-dark-card dark:border-slate-800"
@@ -172,7 +172,8 @@ export default function Register() {
             disabled={loading}
             className="w-full rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 transition-colors cursor-pointer mt-2"
           >
-            {loading ? 'Creating business account...' : 'Complete Register'}
+           {role === "customer" ? "Sign In" : "Create Account"}
+           {loading && "Processing..."}
           </button>
 
         </form>

@@ -36,10 +36,6 @@ const productSchema = new mongoose.Schema({
     required: [true, 'Please enter retail price'],
     min: [0, 'Price cannot be negative']
   },
-  wholesalePrice: {
-    type: Number,
-    default: null
-  },
   minimumOrderQuantity: {
     type: Number,
     default: 1,

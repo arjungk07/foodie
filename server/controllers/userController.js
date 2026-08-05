@@ -16,7 +16,7 @@ export const getCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({ userId: req.user.id }).populate({
       path: 'items.productId',
-      select: 'productName price wholesalePrice minimumOrderQuantity stock images brand discount availability'
+      select: 'productName price minimumOrderQuantity stock images brand discount availability'
     });
 
     if (!cart) {
@@ -56,6 +56,10 @@ export const addToCart = async (req, res, next) => {
     }
 
     await cart.save();
+    await cart.populate({
+      path: 'items.productId',
+      select: 'productName price minimumOrderQuantity stock images brand discount availability'
+    });
     res.status(200).json({ success: true, message: 'Item added to cart successfully', cart });
   } catch (error) {
     next(error);
@@ -66,6 +70,29 @@ export const updateCartQuantity = async (req, res, next) => {
   const { productId, quantity } = req.body;
 
   try {
+    const newQty = Number(quantity);
+    if (isNaN(newQty) || newQty < 1) {
+      res.status(400);
+      throw new Error('Invalid quantity');
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      res.status(404);
+      throw new Error('Product not found');
+    }
+
+    const minQty = product.minimumOrderQuantity || 1;
+    if (newQty < minQty) {
+      res.status(400);
+      throw new Error(`Quantity cannot be less than minimum order quantity of ${minQty}`);
+    }
+
+    if (newQty > product.stock) {
+      res.status(400);
+      throw new Error(`Quantity cannot exceed available stock of ${product.stock}`);
+    }
+
     const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
       res.status(404);
@@ -78,8 +105,12 @@ export const updateCartQuantity = async (req, res, next) => {
       throw new Error('Product not found in cart');
     }
 
-    cart.items[itemIndex].quantity = Number(quantity);
+    cart.items[itemIndex].quantity = newQty;
     await cart.save();
+    await cart.populate({
+      path: 'items.productId',
+      select: 'productName price minimumOrderQuantity stock images brand discount availability'
+    });
 
     res.status(200).json({ success: true, message: 'Cart updated successfully', cart });
   } catch (error) {
@@ -99,6 +130,10 @@ export const removeFromCart = async (req, res, next) => {
 
     cart.items = cart.items.filter(item => item.productId.toString() !== productId);
     await cart.save();
+    await cart.populate({
+      path: 'items.productId',
+      select: 'productName price minimumOrderQuantity stock images brand discount availability'
+    });
 
     res.status(200).json({ success: true, message: 'Product removed from cart', cart });
   } catch (error) {
@@ -114,7 +149,7 @@ export const getWishlist = async (req, res, next) => {
   try {
     let wishlist = await Wishlist.findOne({ userId: req.user.id }).populate(
       'products',
-      'productName price wholesalePrice minimumOrderQuantity stock images brand discount availability'
+      'productName price minimumOrderQuantity stock images brand discount availability'
     );
 
     if (!wishlist) {

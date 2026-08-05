@@ -58,8 +58,8 @@ export default function Login() {
             <Store className="h-6 w-6" />
             <span>Foodie</span>
           </Link>
-          <h2 className="text-xl font-bold tracking-tight">Welcome Back</h2>
-          <p className="text-xs text-slate-550 dark:text-slate-400 mt-1">Access your B2B sourcing portal</p>
+          <h2 className="text-xl font-bold tracking-tight">Login</h2>
+          {/* <p className="text-xs text-slate-550 dark:text-slate-400 mt-1">Access your B2B sourcing portal</p> */}
         </div>
 
         {/* Form */}
@@ -67,12 +67,12 @@ export default function Login() {
           
           {/* Email */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-650 dark:text-slate-350">Business Email</label>
+            <label className="text-xs font-semibold text-slate-650 dark:text-slate-350">Email</label>
             <div className="relative">
               <input
                 type="email"
                 required
-                placeholder="you@company.com"
+                placeholder="example@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 dark:bg-dark-card dark:border-slate-800"
@@ -114,7 +114,7 @@ export default function Login() {
         </form>
 
         {/* Demo login details box */}
-        <div className="rounded-xl bg-slate-50 p-4 text-[10px] text-slate-600 border border-slate-200 dark:bg-dark-bg/60 dark:border-slate-850 dark:text-slate-400">
+        {/* <div className="rounded-xl bg-slate-50 p-4 text-[10px] text-slate-600 border border-slate-200 dark:bg-dark-bg/60 dark:border-slate-850 dark:text-slate-400">
           <p className="font-bold flex items-center gap-1 text-slate-850 dark:text-white mb-2">
             <AlertCircle className="h-3.5 w-3.5 text-emerald-500" />
             Demo Accounts Available:
@@ -124,7 +124,7 @@ export default function Login() {
             <li><span className="font-semibold text-slate-700 dark:text-slate-300">Seller:</span> seller@foodie.com / password123</li>
             <li><span className="font-semibold text-slate-700 dark:text-slate-300">Admin:</span> admin@foodie.com / password123</li>
           </ul>
-        </div>
+        </div> */}
 
         {/* Redirect */}
         <p className="text-center text-xs text-slate-500">

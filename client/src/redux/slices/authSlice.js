@@ -4,6 +4,16 @@ import API from '../../services/api.js';
 // Helper to get initial state from localStorage
 const storedUser = localStorage.getItem('user');
 const initialUser = storedUser ? JSON.parse(storedUser) : null;
+console.log(initialUser);
+// {
+//     "_id": "6a70c6ed9c6418045b2a2d88",
+//     "fullName": "Alice Shopkeeper",
+//     "email": "customer@foodie.com",
+//     "mobile": "+919876543212",
+//     "role": "customer",
+//     "profileImage": "",
+//     "isVerified": true 
+// } --- it is the initialuser after login if no login it gives null
 
 // Async Thunks
 export const registerUser = createAsyncThunk('auth/register', async (userData, thunkAPI) => {

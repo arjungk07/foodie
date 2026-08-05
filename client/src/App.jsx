@@ -35,7 +35,7 @@ import NotFound from './pages/NotFound.jsx';
 function ProtectedRoute({ children, allowedRoles = [] }) {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated) { // here not authenticated go to login page
     return <Navigate to="/login" replace />;
   }
 

@@ -76,11 +76,13 @@ export default function SellerDashboard() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
+  console.log(orders);
 
   // Loading flags
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingOrders, setLoadingOrders] = useState(true);
+
 
   // Add / Edit form
   const [form, setForm] = useState(EMPTY_FORM);
@@ -238,7 +240,6 @@ export default function SellerDashboard() {
       fd.append('productName', form.productName);
       fd.append('category', form.category);
       fd.append('price', form.price);
-      fd.append('wholesalePrice', form.price); // backend requires this field
       fd.append('stock', form.stock);
       fd.append('minimumOrderQuantity', 1);     // backend requires, default 1
       fd.append('unit', form.unit);
@@ -300,7 +301,7 @@ export default function SellerDashboard() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
 
       {/* ─── Sidebar ─────────────────────────────────────────────────────── */}
       <aside className="hidden md:flex flex-col w-56 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800">
@@ -352,7 +353,7 @@ export default function SellerDashboard() {
       </div>
 
       {/* ─── Main Content ─────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col min-h-screen pb-20 md:pb-0">
+      <main className="w-full flex flex-col min-h-screen pb-20 md:pb-0">
 
         {/* Top bar */}
         <header className="h-16 shrink-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center px-6 gap-3">

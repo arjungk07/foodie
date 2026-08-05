@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCart, updateCartQty, removeFromCart, validateCoupon, resetCoupon } from '../redux/slices/cartSlice.js';
+import { fetchCart, updateCartQty, removeFromCart, validateCoupon, resetCoupon, updateItemQuantityOptimistic } from '../redux/slices/cartSlice.js';
 import { Trash2, ShoppingBag, ArrowRight, Info, AlertTriangle, Gift } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
@@ -15,6 +15,7 @@ export default function Cart() {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const [couponCode, setCouponCode] = useState('');
+  const debounceTimers = useRef({});
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -22,15 +23,41 @@ export default function Cart() {
     }
   }, [isAuthenticated, dispatch]);
 
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimers.current).forEach((timer) => clearTimeout(timer));
+    };
+  }, []);
+
   const handleQtyChange = (productId, newQty, stock, moq) => {
-    if (newQty < 1) return;
+    const minQty = moq || 1;
+
+    if (newQty < minQty) {
+      toast.error(`Cannot decrease quantity below ${minQty} units.`);
+      return;
+    }
     if (newQty > stock) {
       toast.error(`Cannot exceed available stock of ${stock} units.`);
       return;
     }
-    dispatch(updateCartQty({ productId, quantity: newQty }))
-      .unwrap()
-      .catch(() => toast.error('Failed to update quantity'));
+
+    // 1. Immediately update UI via Redux optimistic update
+    dispatch(updateItemQuantityOptimistic({ productId, quantity: newQty }));
+
+    // 2. Debounce backend API request to handle rapid user clicks cleanly
+    if (debounceTimers.current[productId]) {
+      clearTimeout(debounceTimers.current[productId]);
+    }
+
+    debounceTimers.current[productId] = setTimeout(() => {
+      dispatch(updateCartQty({ productId, quantity: newQty }))
+        .unwrap()
+        .catch((err) => {
+          toast.error(err || 'Failed to update quantity');
+          dispatch(fetchCart());
+        });
+      delete debounceTimers.current[productId];
+    }, 350);
   };
 
   const handleRemove = (productId) => {
@@ -67,19 +94,15 @@ export default function Cart() {
     }
 
     let unitPrice = p.price;
-    if (isWholesaleActive) {
-      unitPrice = p.wholesalePrice;
-    } else if (p.discount > 0) {
-      unitPrice = p.price - (p.price * (p.discount / 100));
+    if (p.discount > 0) {
+      unitPrice = Math.round(p.price - (p.price * (p.discount / 100)));
     }
-
     const itemTotal = unitPrice * item.quantity;
     subTotal += itemTotal;
 
     return {
       ...item,
       unitPrice,
-      isWholesaleActive,
       itemTotal
     };
   }).filter(Boolean);
@@ -109,7 +132,7 @@ export default function Cart() {
       <div className="mx-auto max-w-7xl px-4 py-20 text-center flex flex-col items-center justify-center gap-4">
         <ShoppingBag className="h-12 w-12 text-slate-300 dark:text-slate-700 animate-bounce" />
         <h2 className="text-lg font-bold">Your Sourcing Cart is Empty</h2>
-        <p className="text-xs text-slate-500 max-w-xs">Please log in to load your persistent wholesale cart and start compiling business orders.</p>
+        <p className="text-xs text-slate-500 max-w-xs">Please log in to load your cart and start placing orders.</p>
         <Link to="/login" className="mt-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-emerald-700">
           Sign In / Register
         </Link>
@@ -127,27 +150,27 @@ export default function Cart() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-      
+
       {/* Breadcrumbs */}
       <Breadcrumbs paths={[{ label: 'Shopping Cart' }]} />
 
-      <h1 className="text-2xl font-black mt-4">Wholesale Sourcing Cart</h1>
+      <h1 className="text-2xl font-black mt-4">Shopping Cart</h1>
 
       {items.length === 0 ? (
         <div className="text-center px-10 py-20 flex flex-col items-center justify-center gap-4 bg-white dark:bg-dark-card border border-slate-200/80 dark:border-slate-850 rounded-3xl mt-6">
           <ShoppingBag className="h-12 w-12 text-slate-300 dark:text-slate-700" />
           <h2 className="text-sm font-bold">Your Cart is Empty</h2>
-          <p className="text-xs text-slate-500">Go back to the wholesale catalog to choose bulk products.</p>
+          <p className="text-xs text-slate-500">Go back to the catalog to choose  products.</p>
           <Link to="/products" className="mt-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-emerald-700">
             Browse Catalog
           </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
-          
+
           {/* Left Column - Items List */}
           <div className="lg:col-span-2 flex flex-col gap-4">
-            
+
             {hasMoqViolations && (
               <div className="flex gap-2.5 rounded-2xl bg-amber-50 px-4 py-3 text-xs text-amber-800 border border-amber-200 dark:bg-amber-950/20 dark:text-amber-300">
                 <AlertTriangle className="h-4.5 w-4.5 shrink-0 text-amber-500 mt-0.5" />
@@ -163,8 +186,8 @@ export default function Cart() {
             {processedItems.map((item) => {
               const p = item.productId;
               return (
-                <div 
-                  key={item._id} 
+                <div
+                  key={item._id}
                   className="flex gap-4 p-4 bg-white dark:bg-dark-card border border-slate-200/80 dark:border-slate-850 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
                 >
                   {/* Image */}
@@ -183,7 +206,7 @@ export default function Cart() {
                       </div>
 
                       {/* MOQ check tags */}
-                      <div className="mt-2">
+                      {/* <div className="mt-2">
                         {item.isWholesaleActive ? (
                           <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-450 uppercase">
                             Wholesale Pricing Active
@@ -194,7 +217,7 @@ export default function Cart() {
                             Below MOQ ({p.minimumOrderQuantity})
                           </span>
                         )}
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Quantity Selector & Price */}
@@ -207,16 +230,18 @@ export default function Cart() {
                       <div className="flex items-center gap-2">
                         {/* Minus */}
                         <button
-                          onClick={() => handleQtyChange(p._id, item.quantity - 1, p.stock, p.minimumOrderQuantity)}
-                          className="h-7 w-7 rounded-lg border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-50 dark:border-slate-800"
+                          onClick={() => handleQtyChange(p._id, item.quantity - 1, p.stock, p.minimumOrderQuantity || 1)}
+                          disabled={item.quantity <= (p.minimumOrderQuantity || 1)}
+                          className="h-7 w-7 rounded-lg border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-50 dark:border-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                         >
                           -
                         </button>
                         <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
                         {/* Plus */}
                         <button
-                          onClick={() => handleQtyChange(p._id, item.quantity + 1, p.stock, p.minimumOrderQuantity)}
-                          className="h-7 w-7 rounded-lg border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-50 dark:border-slate-800"
+                          onClick={() => handleQtyChange(p._id, item.quantity + 1, p.stock, p.minimumOrderQuantity || 1)}
+                          disabled={item.quantity >= p.stock}
+                          className="h-7 w-7 rounded-lg border border-slate-200 flex items-center justify-center text-xs font-bold hover:bg-slate-50 dark:border-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                         >
                           +
                         </button>
@@ -241,7 +266,7 @@ export default function Cart() {
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
             <div className="glass-panel p-6 rounded-3xl border border-slate-200/80 dark:border-slate-850 sticky top-20 flex flex-col gap-5">
-              
+
               <h2 className="text-sm font-bold pb-2 border-b border-slate-100 dark:border-slate-800">
                 Sourcing summary
               </h2>
@@ -268,7 +293,7 @@ export default function Cart() {
                     {shippingCharges === 0 ? 'FREE' : formatINR(shippingCharges)}
                   </span>
                 </div>
-                
+
                 {shippingCharges > 0 && (
                   <p className="text-[10px] text-slate-400 italic">
                     Add {formatINR(500 - subTotal)} more to unlock free B2B shipping!

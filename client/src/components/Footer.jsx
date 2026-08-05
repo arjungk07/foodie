@@ -12,15 +12,15 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-2 font-bold text-xl text-emerald-600 dark:text-emerald-500">
               <Store className="h-6 w-6" />
-              <span>Foodie<span className="text-slate-800 dark:text-white">Wholesale</span></span>
+              <span>Foodie</span>
             </Link>
             <p className="text-xs leading-relaxed text-slate-500">
-              The premier B2B Wholesale Marketplace. Enforcing minimum order quantities (MOQ) to connect high-volume distributors with bulk retail discounts.
+              The best place to buy groceries in bulk. Minimum order quantities (MOQ) to connect high-volume distributors with bulk retail discounts.
             </p>
             <div className="flex gap-3 text-slate-400 dark:text-slate-500 mt-2">
-              <Facebook className="h-4 w-4 hover:text-emerald-500 cursor-pointer" />
+              {/* <Facebook className="h-4 w-4 hover:text-emerald-500 cursor-pointer" />
               <Twitter className="h-4 w-4 hover:text-emerald-500 cursor-pointer" />
-              <Linkedin className="h-4 w-4 hover:text-emerald-500 cursor-pointer" />
+              <Linkedin className="h-4 w-4 hover:text-emerald-500 cursor-pointer" /> */}
             </div>
           </div>
 
@@ -44,7 +44,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-2.5 text-xs">
               <li><Link to="/privacy-policy" className="hover:text-emerald-500">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-emerald-500">Terms & Conditions</Link></li>
-              <li><Link to="/faq" className="hover:text-emerald-500">Wholesale MOQ Rules</Link></li>
+              <li><Link to="/faq" className="hover:text-emerald-500">Foodie Faq</Link></li>
             </ul>
           </div>
 
@@ -56,15 +56,15 @@ export default function Footer() {
             <ul className="flex flex-col gap-3 text-xs">
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-slate-400" />
-                <span>support@foodie.com</span>
+                <span>arjun.gk10g2021.22@gmail.com</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-slate-400" />
-                <span>+1 (888) 555-0199</span>
+                <span>9095917892</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-slate-400 mt-0.5" />
-                <span>100 Business Parkway,<br />Suite 500, New York, NY</span>
+                <span>Madurai, Tamil Nadu, India</span>
               </li>
             </ul>
           </div>
@@ -72,7 +72,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-slate-100 dark:border-slate-850 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-slate-500">
-          <span>&copy; {new Date().getFullYear()} Foodie Wholesale LLC. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} Foodie LLC. All rights reserved.</span>
           <span className="flex gap-4">
             <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
             <Link to="/terms" className="hover:underline">Terms</Link>

@@ -14,7 +14,7 @@ export default function ProductCard({ product, onWishlistUpdate }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast.warning('Please login to place wholesale orders');
+      toast.warning('Please login to add items to cart');
       return;
     }
     dispatch(addToCart({ productId: product._id, quantity: product.minimumOrderQuantity }))
@@ -67,7 +67,7 @@ export default function ProductCard({ product, onWishlistUpdate }) {
           
           {/* Discount Badge */}
           {hasDiscount && (
-            <span className="absolute left-2.5 top-2.5 rounded-md bg-rose-500 px-2 py-0.5 text-[9px] font-black text-white uppercase tracking-wider shadow-xs">
+            <span className="absolute left-2.5 top-2.5 rounded-full bg-rose-500 px-2 py-0.5 text-[9px] font-black text-white uppercase tracking-wider shadow-xs">
               {product.discount}% OFF
             </span>
           )}
@@ -105,17 +105,17 @@ export default function ProductCard({ product, onWishlistUpdate }) {
           <div className="pt-2 border-t border-slate-100 dark:border-slate-850">
             <div className="flex items-baseline flex-wrap gap-1">
               <span className="text-sm font-black text-emerald-600 dark:text-emerald-500">
-                {formatINR(product.wholesalePrice)}
+                {formatINR(hasDiscount ? product.price - (product.price * (product.discount / 100)) : product.price)}
               </span>
-              {product.price > product.wholesalePrice && (
-                <span className="text-[10px] text-slate-400 line-through dark:text-slate-500 ml-1">
-                  {formatINR(product.price)}
-                </span>
-              )}
               {hasDiscount && (
-                <span className="text-[9px] font-bold text-rose-500 ml-1">
-                  ({product.discount}% off)
-                </span>
+                <>
+                  <span className="text-[10px] text-slate-400 line-through dark:text-slate-500 ml-1">
+                    {formatINR(product.price)}
+                  </span>
+                  <span className="text-[9px] font-bold text-rose-500 ml-1">
+                    ({product.discount}% off)
+                  </span>
+                </>
               )}
             </div>
 

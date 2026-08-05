@@ -28,7 +28,7 @@ export default function OrderSuccess() {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-20 text-center animate-pulse">
-        <p className="text-sm font-semibold text-slate-500">Retrieving wholesale invoice details...</p>
+        <p className="text-sm font-semibold text-slate-500">Retrieving invoice details...</p>
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function OrderSuccess() {
           Order Placed Successfully!
         </h1>
         <p className="text-xs text-slate-500 max-w-md">
-          Thank you for sourcing with Foodie Wholesale. Your invoice has been generated, and items are queued for warehouse routing.
+          Thank you for shopping with Foodie. Your invoice has been generated, and items are queued for warehouse routing.
         </p>
       </div>
 
@@ -72,7 +72,7 @@ export default function OrderSuccess() {
         {/* Progress Bar steps */}
         <div className="relative flex justify-between items-center w-full">
           {/* Background progress bar line */}
-          <div className="absolute left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800 z-0"></div>
+          <div className="absolute  left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800 z-0"></div>
           <div 
             className="absolute left-0 h-1 bg-emerald-500 z-0 transition-all duration-500"
             style={{ width: `${(currentStatusIndex / (statuses.length - 1)) * 100}%` }}
@@ -82,9 +82,9 @@ export default function OrderSuccess() {
             const isActive = idx <= currentStatusIndex;
             const isCurrent = idx === currentStatusIndex;
             return (
-              <div key={step} className="flex flex-col items-center z-10 relative">
+              <div key={step} className="flex flex-col items-center  z-10 relative">
                 <div 
-                  className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold border transition-colors ${
+                  className={`h-7 w-7 rounded-full mb-8 flex items-center justify-center text-xs font-bold border transition-colors ${
                     isCurrent 
                       ? 'bg-emerald-600 border-emerald-600 text-white shadow-md' 
                       : isActive 
@@ -118,12 +118,12 @@ export default function OrderSuccess() {
         {/* Invoice Header */}
         <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-6">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Wholesale Invoice</h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Invoice</h2>
             <p className="text-[10px] text-slate-500 mt-1">Invoice ID: {order.invoiceNumber}</p>
             <p className="text-[10px] text-slate-400">Date: {new Date(order.createdAt).toLocaleDateString()}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm font-black text-emerald-600 dark:text-emerald-500">Foodie Wholesale</p>
+            <p className="text-sm font-black text-emerald-600 dark:text-emerald-500">Foodie</p>
             <p className="text-[9px] text-slate-500 mt-0.5">VAT/TAX: B2B-99887711</p>
           </div>
         </div>
@@ -163,11 +163,6 @@ export default function OrderSuccess() {
                 <tr key={item._id} className="border-b border-slate-50 dark:border-slate-900">
                   <td className="py-3 pr-4">
                     <p className="font-bold text-slate-800 dark:text-slate-200">{item.productName}</p>
-                    {item.wholesaleApplied && (
-                      <span className="text-[8px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">
-                        Wholesale Rate
-                      </span>
-                    )}
                   </td>
                   <td className="py-3 text-center font-medium">{item.quantity}</td>
                   <td className="py-3 text-right font-medium">{formatINR(item.price)}</td>

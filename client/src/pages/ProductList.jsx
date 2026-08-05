@@ -20,8 +20,6 @@ export default function ProductList() {
   const [category, setCategory] = useState(searchParams.get('category') || '');
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
-  const [minWholesalePrice, setMinWholesalePrice] = useState(searchParams.get('minWholesalePrice') || '');
-  const [maxWholesalePrice, setMaxWholesalePrice] = useState(searchParams.get('maxWholesalePrice') || '');
   const [rating, setRating] = useState(searchParams.get('rating') || '');
   const [availability, setAvailability] = useState(searchParams.get('availability') || '');
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
@@ -86,8 +84,6 @@ export default function ProductList() {
     if (category) newParams.category = category;
     if (minPrice) newParams.minPrice = minPrice;
     if (maxPrice) newParams.maxPrice = maxPrice;
-    if (minWholesalePrice) newParams.minWholesalePrice = minWholesalePrice;
-    if (maxWholesalePrice) newParams.maxWholesalePrice = maxWholesalePrice;
     if (rating) newParams.rating = rating;
     if (availability) newParams.availability = availability;
     if (sort) newParams.sort = sort;
@@ -96,104 +92,7 @@ export default function ProductList() {
     setSearchParams(newParams);
   };
 
-  // const dummyProducts = [
-  //   {
-  //     _id: "1",
-  //     productName: "Premium Basmati Rice",
-  //     brand: "India Gate",
-  //     price: 1200,
-  //     wholesalePrice: 950,
-  //     discount: 20,
-  //     rating: 4.8,
-  //     minimumOrderQuantity: 10,
-  //     stock: 500,
-  //     images: [
-  //       {
-  //         url: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600"
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     _id: "2",
-  //     productName: "Sunflower Cooking Oil",
-  //     brand: "Fortune",
-  //     price: 2200,
-  //     wholesalePrice: 1800,
-  //     discount: 18,
-  //     rating: 4.6,
-  //     minimumOrderQuantity: 5,
-  //     stock: 300,
-  //     images: [
-  //       {
-  //         url: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600"
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     _id: "3",
-  //     productName: "Red Chilli Powder",
-  //     brand: "Aachi",
-  //     price: 650,
-  //     wholesalePrice: 500,
-  //     discount: 15,
-  //     rating: 4.7,
-  //     minimumOrderQuantity: 20,
-  //     stock: 800,
-  //     images: [
-  //       {
-  //         url: "https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=600"
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     _id: "4",
-  //     productName: "Turmeric Powder",
-  //     brand: "Sakthi",
-  //     price: 500,
-  //     wholesalePrice: 380,
-  //     discount: 12,
-  //     rating: 4.5,
-  //     minimumOrderQuantity: 25,
-  //     stock: 600,
-  //     images: [
-  //       {
-  //         url: "https://images.unsplash.com/photo-1615485925873-6b5f74d30f3f?w=600"
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     _id: "5",
-  //     productName: "Organic Sugar",
-  //     brand: "Madhur",
-  //     price: 900,
-  //     wholesalePrice: 750,
-  //     discount: 10,
-  //     rating: 4.4,
-  //     minimumOrderQuantity: 15,
-  //     stock: 450,
-  //     images: [
-  //       {
-  //         url: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=600"
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     _id: "6",
-  //     productName: "Toor Dal",
-  //     brand: "24 Mantra",
-  //     price: 1400,
-  //     wholesalePrice: 1180,
-  //     discount: 16,
-  //     rating: 4.9,
-  //     minimumOrderQuantity: 10,
-  //     stock: 700,
-  //     images: [
-  //       {
-  //         url: "https://images.unsplash.com/photo-1603048719539-9ecb6d3b9b55?w=600"
-  //       }
-  //     ]
-  //   }
-  // ];
+
 
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -208,8 +107,6 @@ export default function ProductList() {
     setCategory('');
     setMinPrice('');
     setMaxPrice('');
-    setMinWholesalePrice('');
-    setMaxWholesalePrice('');
     setRating('');
     setAvailability('');
     setSort('newest');
@@ -281,26 +178,7 @@ export default function ProductList() {
                 </div>
               </div>
 
-              {/* Wholesale Price Range */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Wholesale Price (₹)</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={minWholesalePrice}
-                    onChange={(e) => setMinWholesalePrice(e.target.value)}
-                    className="w-1/2 py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:outline-none bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={maxWholesalePrice}
-                    onChange={(e) => setMaxWholesalePrice(e.target.value)}
-                    className="w-1/2 py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:outline-none bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
-                  />
-                </div>
-              </div>
+
 
               {/* Ratings */}
               <div className="flex flex-col gap-1.5">
@@ -351,7 +229,7 @@ export default function ProductList() {
 
             {/* Left Info */}
             <div>
-              <p className="text-xs font-medium text-slate-400">Showing wholesale catalog</p>
+              <p className="text-xs font-medium text-slate-400">Showing catalog</p>
               <h1 className="text-base font-extrabold text-slate-800 dark:text-white mt-0.5">
                 {loading ? 'Searching offers...' : `${totalProducts} Products Available`}
               </h1>
@@ -372,8 +250,8 @@ export default function ProductList() {
                   <option value="infinite">Infinite Scroll</option>
                 </select>
               </div>
-
-              <div className="flex-1 sm:flex-none relative">
+               
+              {/* <div className="flex-1 sm:flex-none relative">
                 <input
                   type="text"
                   placeholder="Refine search..."
@@ -382,10 +260,10 @@ export default function ProductList() {
                   className="pl-8 pr-3 py-1.5 w-full sm:w-48 text-xs rounded-lg border border-slate-200 focus:outline-none bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
                 />
                 <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-slate-400" />
-              </div>
+              </div> */}
 
               {/* Sorting Dropdown */}
-              <div className="flex items-center gap-1.5 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 rounded-lg bg-slate-50/50 dark:bg-dark-bg">
+              <div className="flex items-center  border border-slate-200 dark:border-slate-800 px-1.5 py-1.5 rounded-lg bg-slate-50/50 dark:bg-dark-bg">
                 <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
                 <select
                   value={sort}
@@ -398,10 +276,8 @@ export default function ProductList() {
                   className="text-xs focus:outline-none bg-transparent"
                 >
                   <option value="newest">Newest Offers</option>
-                  <option value="wholesale-low">Wholesale Price: Low to High</option>
-                  <option value="wholesale-high">Wholesale Price: High to Low</option>
-                  <option value="price-low">Retail Price: Low to High</option>
-                  <option value="price-high">Retail Price: High to Low</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
                   <option value="rating">Top Rated</option>
                   <option value="popular">Best Sellers</option>
                 </select>

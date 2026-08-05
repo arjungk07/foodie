@@ -77,39 +77,55 @@ export const getSellerDashboardStats = async (req, res, next) => {
 // @access  Private (Seller)
 export const getSellerOrders = async (req, res, next) => {
   try {
-    const products = await Product.find({ sellerId: req.user.id });
-    const productIds = products.map(p => p._id);
+    // Get all products belonging to the logged-in seller
+    const products = await Product.find({ sellerId: req.user.id }).select("_id");
+    const productIdSet = new Set(products.map(product => product._id.toString()));
 
-    const orders = await Order.find({ 'items.productId': { $in: productIds } })
-      .populate('userId', 'fullName email mobile')
+    // Fetch orders containing at least one of the seller's products
+    const orders = await Order.find({
+      "items.productId": { $in: [...productIdSet].map(id => id) }
+    })
+      .populate("userId", "fullName email mobile")
       .populate({
-        path: 'items.productId',
-        select: 'images brand SKU sellerId productName',
+        path: "items.productId",
+        select: "productName images brand SKU sellerId",
         populate: {
-          path: 'sellerId',
-          select: 'fullName'
+          path: "sellerId",
+          select: "fullName"
         }
       })
-      .sort('-createdAt');
+      .sort({ createdAt: -1 });
 
-    // Filter items inside the orders to only show the items belonging to this seller
-    const sellerOrders = orders.map(order => {
-      const orderObj = order.toObject();
-      ensureTimelineAndStatus(orderObj);
-      orderObj.items = orderObj.items.filter(item => 
-        productIds.map(id => id.toString()).includes(item.productId.toString())
-      );
-      
-      // Strip OTP details for seller safety
-      delete orderObj.otpCode;
-      delete orderObj.otpEncrypted;
-      
-      return orderObj;
-    });
+    // Keep only this seller's items in each order
+    const sellerOrders = orders
+      .map(order => {
+        const orderObj = order.toObject();
+
+        ensureTimelineAndStatus(orderObj);
+
+        orderObj.items = orderObj.items.filter(item => {
+          if (!item.productId) return false;
+
+          const id =
+            item.productId._id
+              ? item.productId._id.toString()
+              : item.productId.toString();
+
+          return productIdSet.has(id);
+        });
+
+        // Remove sensitive OTP fields
+        delete orderObj.otpCode;
+        delete orderObj.otpEncrypted;
+
+        return orderObj;
+      })
+      // Remove orders that don't contain any of this seller's products
+      .filter(order => order.items.length > 0);
 
     res.status(200).json({
       success: true,
-      orders: sellerOrders
+      orders: sellerOrders,
     });
   } catch (error) {
     next(error);

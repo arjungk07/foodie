@@ -10,10 +10,10 @@ export default function NotFound() {
       </div>
       <h1 className="text-3xl font-black text-slate-900 dark:text-white">404 - Page Not Found</h1>
       <p className="text-xs text-slate-500 max-w-sm">
-        The sourcing resources, wholesale category, or dashboard tab you are looking for does not exist or has been relocated.
+        The page you're trying to access is unavailable or no longer exists.
       </p>
-      <Link 
-        to="/" 
+      <Link
+        to="/"
         className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />

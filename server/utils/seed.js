@@ -65,40 +65,40 @@ const seedDB = async () => {
 
     // Create user accounts
     const admin = await User.create({
-      fullName: 'John Admin',
-      email: 'admin@foodie.com',
-      mobile: '+919876543210',
-      password: 'password123',
+      fullName: 'Foodie',
+      email: 'arjun.gk10g2021.22@gmail.com',
+      mobile: '9095917892',
+      password: 'foodie2307!success',
       role: 'admin',
       isVerified: true
     });
 
     const seller = await User.create({
-      fullName: 'Wholesale Distributors Inc.',
-      email: 'seller@foodie.com',
-      mobile: '+919876543211',
-      password: 'password123',
+      fullName: 'G M KRISHNAN',
+      email: 'krishnangm06@gmail.com',
+      mobile: '9095917892',
+      password: 'seller2307!success',
       role: 'seller',
       isVerified: true,
-      profileImage: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=100&auto=format&fit=crop'
+      profileImage: ''
     });
 
-    const customer = await User.create({
-      fullName: 'Alice Shopkeeper',
-      email: 'customer@foodie.com',
-      mobile: '+919876543212',
-      password: 'password123',
-      role: 'customer',
-      isVerified: true
-    });
+    // const customer = await User.create({
+    //   fullName: 'Alice Shopkeeper',
+    //   email: 'customer@foodie.com',
+    //   mobile: '+919876543212',
+    //   password: 'password123',
+    //   role: 'customer',
+    //   isVerified: true
+    // });
 
     // Create Carts & Wishlists
     await Cart.create({ userId: admin._id, items: [] });
     await Wishlist.create({ userId: admin._id, products: [] });
     await Cart.create({ userId: seller._id, items: [] });
     await Wishlist.create({ userId: seller._id, products: [] });
-    await Cart.create({ userId: customer._id, items: [] });
-    await Wishlist.create({ userId: customer._id, products: [] });
+    // await Cart.create({ userId: customer._id, items: [] });
+    // await Wishlist.create({ userId: customer._id, products: [] });
 
     console.log('Seed: Created Admin, Seller, and Customer accounts...');
 
@@ -112,176 +112,7 @@ const seedDB = async () => {
     const rawProducts = [
 
 
-      // {
-      //   productName: 'iPhone 15 Pro Max (256 GB) - Titanium',
-      //   brand: 'Apple',
-      //   categorySlug: 'mobiles',
-      //   subCategory: 'iOS',
-      //   price: 159900,
-      //   wholesalePrice: 144900,
-      //   minimumOrderQuantity: 2,
-      //   discount: 9,
-      //   rating: 4.9,
-      //   imageUrl: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=600'
-      // },
-      // {
-      //   productName: 'Samsung Galaxy S24 Ultra (512 GB) - Black',
-      //   brand: 'Samsung',
-      //   categorySlug: 'mobiles',
-      //   subCategory: 'Android',
-      //   price: 139999,
-      //   wholesalePrice: 121999,
-      //   minimumOrderQuantity: 2,
-      //   discount: 12,
-      //   rating: 4.8,
-      //   imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600'
-      // },
-      // {
-      //   productName: 'OnePlus 12 5G (16GB RAM / 256GB)',
-      //   brand: 'OnePlus',
-      //   categorySlug: 'mobiles',
-      //   subCategory: 'Android',
-      //   price: 64999,
-      //   wholesalePrice: 57999,
-      //   minimumOrderQuantity: 3,
-      //   discount: 10,
-      //   rating: 4.7,
-      //   imageUrl: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600'
-      // },
-      // {
-      //   productName: 'Redmi Note 13 Pro+ 5G (8GB / 256GB)',
-      //   brand: 'Xiaomi',
-      //   categorySlug: 'mobiles',
-      //   subCategory: 'Android',
-      //   price: 31999,
-      //   wholesalePrice: 26999,
-      //   minimumOrderQuantity: 5,
-      //   discount: 15,
-      //   rating: 4.5,
-      //   imageUrl: 'https://images.unsplash.com/photo-1565849906461-0ee2ecd030fc?w=600'
-      // },
-      // {
-      //   productName: 'Realme 12 Pro 5G (Navigator Beige)',
-      //   brand: 'Realme',
-      //   categorySlug: 'mobiles',
-      //   subCategory: 'Android',
-      //   price: 25999,
-      //   wholesalePrice: 21499,
-      //   minimumOrderQuantity: 5,
-      //   discount: 17,
-      //   rating: 4.4,
-      //   imageUrl: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=600'
-      // },
-      // {
-      //   productName: 'Nothing Phone (2a) 5G (Milk White)',
-      //   brand: 'Nothing',
-      //   categorySlug: 'mobiles',
-      //   subCategory: 'Android',
-      //   price: 23999,
-      //   wholesalePrice: 19999,
-      //   minimumOrderQuantity: 4,
-      //   discount: 16,
-      //   rating: 4.6,
-      //   imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600'
-      // },
-      // {
-      //   productName: 'Motorola Edge 50 Pro (Luxe Lavender)',
-      //   brand: 'Motorola',
-      //   categorySlug: 'mobiles',
-      //   subCategory: 'Android',
-      //   price: 35999,
-      //   wholesalePrice: 29999,
-      //   minimumOrderQuantity: 3,
-      //   discount: 16,
-      //   rating: 4.5,
-      //   imageUrl: 'https://images.unsplash.com/photo-1574756568012-78d1723af6ec?w=600'
-      // },
 
-
-      // {
-      //   productName: 'Levis Mens 511 Slim Fit Jeans',
-      //   brand: 'Levis',
-      //   categorySlug: 'fashion',
-      //   subCategory: 'Menswear',
-      //   price: 3299,
-      //   wholesalePrice: 2199,
-      //   minimumOrderQuantity: 12,
-      //   discount: 33,
-      //   rating: 4.3,
-      //   imageUrl: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600'
-      // },
-      // {
-      //   productName: 'Allen Solly Mens Slim Fit Cotton Shirt',
-      //   brand: 'Allen Solly',
-      //   categorySlug: 'fashion',
-      //   subCategory: 'Menswear',
-      //   price: 1899,
-      //   wholesalePrice: 1199,
-      //   minimumOrderQuantity: 15,
-      //   discount: 36,
-      //   rating: 4.2,
-      //   imageUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600'
-      // },
-      // {
-      //   productName: 'US Polo Assn Solid Mens Pique Polo',
-      //   brand: 'USPA',
-      //   categorySlug: 'fashion',
-      //   subCategory: 'Menswear',
-      //   price: 1999,
-      //   wholesalePrice: 1299,
-      //   minimumOrderQuantity: 20,
-      //   discount: 35,
-      //   rating: 4.4,
-      //   imageUrl: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600'
-      // },
-      // {
-      //   productName: 'Puma Unisex Hooded Cotton Sweatshirt',
-      //   brand: 'Puma',
-      //   categorySlug: 'fashion',
-      //   subCategory: 'Activewear',
-      //   price: 3999,
-      //   wholesalePrice: 2499,
-      //   minimumOrderQuantity: 8,
-      //   discount: 37,
-      //   rating: 4.5,
-      //   imageUrl: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600'
-      // },
-      // {
-      //   productName: 'Adidas Comfort Athletic Sports Socks (Pack of 6)',
-      //   brand: 'Adidas',
-      //   categorySlug: 'fashion',
-      //   subCategory: 'Activewear',
-      //   price: 999,
-      //   wholesalePrice: 599,
-      //   minimumOrderQuantity: 25,
-      //   discount: 40,
-      //   rating: 4.6,
-      //   imageUrl: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600'
-      // },
-      // {
-      //   productName: 'W for Woman Floral Print Cotton Kurta',
-      //   brand: 'W',
-      //   categorySlug: 'fashion',
-      //   subCategory: 'Womenswear',
-      //   price: 2499,
-      //   wholesalePrice: 1599,
-      //   minimumOrderQuantity: 10,
-      //   discount: 36,
-      //   rating: 4.4,
-      //   imageUrl: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600'
-      // },
-      // {
-      //   productName: 'Biba Regular Fit Printed Salwar Suit Set',
-      //   brand: 'Biba',
-      //   categorySlug: 'fashion',
-      //   subCategory: 'Womenswear',
-      //   price: 4999,
-      //   wholesalePrice: 3299,
-      //   minimumOrderQuantity: 6,
-      //   discount: 34,
-      //   rating: 4.5,
-      //   imageUrl: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600'
-      // },
 
 
       // 1. Foods
@@ -293,7 +124,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Drinks',
         price: 43,
-        wholesalePrice: 0,
         minimumOrderQuantity: 1,
         discount: 0,
         rating: 4.9,
@@ -305,7 +135,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Snacks',
         price: 5,
-        wholesalePrice: 0,
         minimumOrderQuantity: 1,
         discount: 0,
         rating: 4.6,
@@ -317,7 +146,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Bakery',
         price: 180,
-        wholesalePrice: 145,
         minimumOrderQuantity: 20,
         discount: 19,
         rating: 4.7,
@@ -329,7 +157,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Fast Food',
         price: 180,
-        wholesalePrice: 145,
         minimumOrderQuantity: 15,
         discount: 20,
         rating: 4.8,
@@ -341,7 +168,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Desserts',
         price: 150,
-        wholesalePrice: 120,
         minimumOrderQuantity: 15,
         discount: 20,
         rating: 4.8,
@@ -353,7 +179,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Healthy Foods',
         price: 550,
-        wholesalePrice: 430,
         minimumOrderQuantity: 10,
         discount: 22,
         rating: 4.7,
@@ -365,7 +190,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Breakfast',
         price: 320,
-        wholesalePrice: 260,
         minimumOrderQuantity: 15,
         discount: 19,
         rating: 4.6,
@@ -377,7 +201,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Sweets',
         price: 350,
-        wholesalePrice: 290,
         minimumOrderQuantity: 12,
         discount: 17,
         rating: 4.8,
@@ -389,7 +212,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Chocolates',
         price: 220,
-        wholesalePrice: 180,
         minimumOrderQuantity: 25,
         discount: 18,
         rating: 4.9,
@@ -401,7 +223,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Biscuits',
         price: 120,
-        wholesalePrice: 95,
         minimumOrderQuantity: 30,
         discount: 21,
         rating: 4.8,
@@ -413,7 +234,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Ice Cream',
         price: 320,
-        wholesalePrice: 260,
         minimumOrderQuantity: 12,
         discount: 19,
         rating: 4.8,
@@ -425,7 +245,6 @@ const seedDB = async () => {
         categorySlug: 'foods',
         subCategory: 'Street Food',
         price: 140,
-        wholesalePrice: 110,
         minimumOrderQuantity: 20,
         discount: 21,
         rating: 4.7,
@@ -447,7 +266,6 @@ const seedDB = async () => {
         brand: p.brand,
         SKU,
         price: p.price,
-        wholesalePrice: p.wholesalePrice,
         minimumOrderQuantity: p.minimumOrderQuantity,
         stock: 500 + (idx * 15),
         images: [{ url: p.imageUrl, publicId: `mock_${p.categorySlug}_${idx}` }],
@@ -457,7 +275,7 @@ const seedDB = async () => {
         discount: p.discount,
         specifications: [
           { key: 'Brand Partner', value: p.brand },
-          { key: 'Logistics Package', value: 'Commercial Safe Box' },
+          { key: 'Logistics Package', value: 'Commercial Safe package' },
           { key: 'Lead Time', value: '2-4 Business Days' },
           { key: 'Warranty', value: '1 Year Manufacturer Warranty' }
         ],
