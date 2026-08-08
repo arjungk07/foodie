@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const cleanUrl = envUrl.replace(/\/+$/, '');
+  return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
+};
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: getApiBaseUrl(),
   withCredentials: true
 });
 
@@ -27,25 +33,32 @@ API.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/refresh-token")
+      !originalRequest.url?.includes("/auth/refresh-token") &&
+      !originalRequest.url?.includes("/auth/login")
     ) {
       originalRequest._retry = true;
       try {
+        const storedRefreshToken = localStorage.getItem('refreshToken');
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh-token`,
-          {},
+          `${getApiBaseUrl()}/auth/refresh-token`,
+          { refreshToken: storedRefreshToken || undefined },
           { withCredentials: true }
         );
 
-        const { accessToken } = response.data;
+        const { accessToken, refreshToken: newRefreshToken } = response.data;
         localStorage.setItem('accessToken', accessToken);
+        if (newRefreshToken) {
+          localStorage.setItem('refreshToken', newRefreshToken);
+        }
 
         // Re-execute original request with new token
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return API(originalRequest);
       } catch (refreshError) {
-        // Refresh token failed/expired - clear local storage and redirect to login
+        // Refresh token failed/expired - clear local storage and dispatch event
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
         window.dispatchEvent(new Event('auth_session_expired'));
         return Promise.reject(refreshError);
       }

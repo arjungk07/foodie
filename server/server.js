@@ -25,10 +25,39 @@ connectDB();
 
 const app = express();
 
-// Security Middlewares
-app.use(helmet());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://arjungk07.github.io',
+  'https://arjungk07.github.io/foodie'
+];
+
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+  allowedOrigins.push(process.env.CLIENT_URL.replace(/\/+$/, ''));
+  allowedOrigins.push(process.env.CLIENT_URL.replace(/\/foodie\/?$/, ''));
+}
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+  allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/+$/, ''));
+  allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/foodie\/?$/, ''));
+}
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    const normalizedOrigin = origin.replace(/\/+$/, '');
+    const isAllowed = allowedOrigins.some((allowed) => {
+      if (!allowed) return false;
+      const normAllowed = allowed.replace(/\/+$/, '').replace(/\/foodie\/?$/, '');
+      return normalizedOrigin === normAllowed || normalizedOrigin === allowed;
+    });
+    if (isAllowed) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 

@@ -6,6 +6,7 @@ import { logoutUser, forceLogout } from '../redux/slices/authSlice.js';
 import { fetchCart } from '../redux/slices/cartSlice.js';
 import API from '../services/api.js';
 import { handleImageError, FALLBACK_PRODUCT_IMAGE } from '../utils/imageUtils.js';
+import logoImg from '../assets/logo.jpg';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -198,6 +199,15 @@ export default function Navbar() {
     }
   };
 
+  // Fetch notifications when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchNotifications();
+    } else {
+      setNotifications([]);
+    }
+  }, [isAuthenticated]);
+
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-dark-bg/85 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -206,7 +216,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-emerald-600 dark:text-emerald-500">
             <img
-              src="./src/assets/logo.jpg"
+              src={logoImg}
               alt="Foodie logo"
               className="h-17 w-18"
               style={{

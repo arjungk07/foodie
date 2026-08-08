@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Store, Mail, Phone, MapPin, Linkedin, Twitter, Facebook } from 'lucide-react';
+import logoImg from '../assets/logo.jpg';
 
 export default function Footer() {
   return (
@@ -12,7 +13,7 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-2 font-bold text-xl text-emerald-600 dark:text-emerald-500">
               <img
-                src="./src/assets/logo.jpg"
+                src={logoImg}
                 alt="Foodie logo"
                 className="h-17 w-18"
                 style={{

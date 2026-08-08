@@ -6,6 +6,22 @@ import sendEmail from '../utils/sendEmail.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000
+});
+
+const getFrontendRedirectUrl = () => {
+  const rawUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
+  let cleanUrl = rawUrl.replace(/\/+$/, '');
+  if (process.env.NODE_ENV === 'production' && !cleanUrl.endsWith('/foodie')) {
+    return `${cleanUrl}/foodie`;
+  }
+  return cleanUrl;
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -86,16 +102,12 @@ export const login = async (req, res, next) => {
     await user.save();
 
     // Set refresh token in HTTP-only cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7days
-    });
+    res.cookie("refreshToken", refreshToken, getCookieOptions());
 
     res.status(200).json({
       success: true,
       accessToken,
+      refreshToken,
       user: {
         _id: user._id,
         fullName: user.fullName,
@@ -115,7 +127,7 @@ export const login = async (req, res, next) => {
 // @route   POST /api/auth/refresh-token
 // @access  Public
 export const refreshToken = async (req, res, next) => {
-  const token = req.cookies.refreshToken;
+  const token = req.cookies?.refreshToken || req.body?.refreshToken || req.headers['x-refresh-token'];
 
   try {
     if (!token) {
@@ -139,25 +151,17 @@ export const refreshToken = async (req, res, next) => {
       user.refreshToken = newRefreshToken;
       await user.save();
 
-      res.cookie('refreshToken', newRefreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-      });
+      res.cookie('refreshToken', newRefreshToken, getCookieOptions());
 
       res.status(200).json({
         success: true,
-        accessToken: newAccessToken
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken
       });
     } catch (err) {
       user.refreshToken = undefined;
       await user.save();
-      res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      });
+      res.clearCookie("refreshToken", getCookieOptions());
       res.status(403);
       throw new Error('Expired refresh token. Please login again.');
     }
@@ -170,7 +174,7 @@ export const refreshToken = async (req, res, next) => {
 // @route   POST /api/auth/logout
 // @access  Private
 export const logout = async (req, res, next) => {
-  const token = req.cookies.refreshToken;
+  const token = req.cookies?.refreshToken || req.body?.refreshToken || req.headers['x-refresh-token'];
 
   try {
     if (token) {
@@ -181,11 +185,7 @@ export const logout = async (req, res, next) => {
       }
     }
 
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    });
+    res.clearCookie("refreshToken", getCookieOptions());
     res.status(200).json({
       success: true,
       message: 'Logged out successfully'
@@ -417,16 +417,12 @@ export const googleAuth = async (req, res, next) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', refreshToken, getCookieOptions());
 
     res.status(200).json({
       success: true,
       accessToken,
+      refreshToken,
       user: {
         _id: user._id,
         fullName: user.fullName,
@@ -468,13 +464,11 @@ export const getGoogleAuthUrl = async (req, res, next) => {
 export const googleAuthCallback = async (req, res, next) => {
   try {
     const { code, error } = req.query;
-
-    const clientUrl =
-      process.env.CLIENT_URL || 'http://localhost:5173';
+    const clientUrl = getFrontendRedirectUrl();
 
     if (error || !code) {
       return res.redirect(
-        `${clientUrl}/foodie/login?error=${encodeURIComponent(
+        `${clientUrl}/login?error=${encodeURIComponent(
           error || 'Google authentication was cancelled'
         )}`
       );
@@ -506,27 +500,19 @@ export const googleAuthCallback = async (req, res, next) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite:
-        process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', refreshToken, getCookieOptions());
 
     // Redirect to Foodie frontend
     res.redirect(
-      `${clientUrl}/foodie/login?token=${accessToken}`
+      `${clientUrl}/login?token=${accessToken}`
     );
 
   } catch (error) {
     console.error('Google Callback Error:', error.message);
-
-    const clientUrl =
-      process.env.CLIENT_URL || 'http://localhost:5173';
+    const clientUrl = getFrontendRedirectUrl();
 
     res.redirect(
-      `${clientUrl}/foodie/login?error=${encodeURIComponent(
+      `${clientUrl}/login?error=${encodeURIComponent(
         'Google authentication failed. Please try again.'
       )}`
     );
