@@ -43,6 +43,22 @@ export const createProduct = createAsyncThunk('products/create', async (formData
   }
 });
 
+export const fetchSellerProducts = createAsyncThunk(
+  'products/fetchSellerProducts',
+  async (_, thunkAPI) => {
+    try {
+      const response = await API.get('/seller/products');
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        'Failed to fetch seller products';
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const submitProductReview = createAsyncThunk('products/submitReview', async (reviewData, thunkAPI) => {
   try {
     const response = await API.post('/users/reviews', reviewData);
@@ -57,6 +73,8 @@ const productSlice = createSlice({
   name: 'products',
   initialState: {
     products: [],
+    sellerProducts: [],
+    sellerProductsLoading: false,
     categories: [],
     currentProduct: null,
     relatedProducts: [],
@@ -76,7 +94,7 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Products
+      // Fetch Products (Customer)
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -94,6 +112,18 @@ const productSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      // Fetch Seller Products (All)
+      .addCase(fetchSellerProducts.pending, (state) => {
+        state.sellerProductsLoading = true;
+      })
+      .addCase(fetchSellerProducts.fulfilled, (state, action) => {
+        state.sellerProductsLoading = false;
+        state.sellerProducts = action.payload.products || [];
+      })
+      .addCase(fetchSellerProducts.rejected, (state, action) => {
+        state.sellerProductsLoading = false;
         state.error = action.payload;
       })
       // Fetch Product By ID

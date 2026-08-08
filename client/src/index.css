@@ -1,4 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
 @import "tailwindcss";
+
 
 @theme {
   --color-primary-50: #f0fdf4;
@@ -12,6 +14,13 @@
   --color-dark-card: #151c2c;
   --color-dark-border: #222d44;
 }
+
+.dancing-script {
+  font-family: "Dancing Script", cursive;
+  font-optical-sizing: auto;
+}
+
+
 
 /* Custom Glassmorphism styles */
 .glass-panel {

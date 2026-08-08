@@ -16,7 +16,7 @@ export const getCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({ userId: req.user.id }).populate({
       path: 'items.productId',
-      select: 'productName price minimumOrderQuantity stock images brand discount availability'
+      select: 'productName price platformFee minimumOrderQuantity stock images brand discount availability'
     });
 
     if (!cart) {
@@ -58,7 +58,7 @@ export const addToCart = async (req, res, next) => {
     await cart.save();
     await cart.populate({
       path: 'items.productId',
-      select: 'productName price minimumOrderQuantity stock images brand discount availability'
+      select: 'productName price platformFee minimumOrderQuantity stock images brand discount availability'
     });
     res.status(200).json({ success: true, message: 'Item added to cart successfully', cart });
   } catch (error) {
@@ -109,7 +109,7 @@ export const updateCartQuantity = async (req, res, next) => {
     await cart.save();
     await cart.populate({
       path: 'items.productId',
-      select: 'productName price minimumOrderQuantity stock images brand discount availability'
+      select: 'productName price platformFee minimumOrderQuantity stock images brand discount availability'
     });
 
     res.status(200).json({ success: true, message: 'Cart updated successfully', cart });
@@ -132,7 +132,7 @@ export const removeFromCart = async (req, res, next) => {
     await cart.save();
     await cart.populate({
       path: 'items.productId',
-      select: 'productName price minimumOrderQuantity stock images brand discount availability'
+      select: 'productName price platformFee minimumOrderQuantity stock images brand discount availability'
     });
 
     res.status(200).json({ success: true, message: 'Product removed from cart', cart });
@@ -149,7 +149,7 @@ export const getWishlist = async (req, res, next) => {
   try {
     let wishlist = await Wishlist.findOne({ userId: req.user.id }).populate(
       'products',
-      'productName price minimumOrderQuantity stock images brand discount availability'
+      'productName price platformFee minimumOrderQuantity stock images brand discount availability'
     );
 
     if (!wishlist) {

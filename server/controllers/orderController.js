@@ -357,7 +357,7 @@ export const getOrderById = async (req, res, next) => {
       .populate('userId', 'fullName email mobile')
       .populate({
         path: 'items.productId',
-        select: 'images brand SKU sellerId productName',
+        select: 'images brand SKU sellerId productName platformFee',
         populate: {
           path: 'sellerId',
           select: 'fullName'
@@ -400,7 +400,7 @@ export const getMyOrders = async (req, res, next) => {
     const orders = await Order.find({ userId: req.user.id })
       .populate({
         path: 'items.productId',
-        select: 'images brand SKU sellerId productName',
+        select: 'images brand SKU sellerId productName platformFee',
         populate: {
           path: 'sellerId',
           select: 'fullName'
@@ -680,37 +680,63 @@ async function _postPaymentActions(order, user, finalItems, rawCartItems) {
     type: 'order',
   });
 
-  // Notify sellers
-  const sellerIds = [
-    ...new Set(
-      await Promise.all(
-        rawCartItems.map(async (i) => {
-          const p = await Product.findById(i.productId);
-          return p?.sellerId?.toString();
-        })
-      )
-    ),
-  ].filter(Boolean);
+  // Group order items by seller and send in-app + WhatsApp notifications to each seller
+  const itemsBySeller = new Map();
+  for (const item of order.items) {
+    const p = await Product.findById(item.productId);
+    if (p && p.sellerId) {
+      const sId = p.sellerId.toString();
+      if (!itemsBySeller.has(sId)) {
+        itemsBySeller.set(sId, []);
+      }
+      itemsBySeller.get(sId).push(item);
+    }
+  }
 
-  for (const sellerId of sellerIds) {
+  let overallWaStatus = 'Sent';
+  let lastErrorMessage = '';
+  let lastMessageSid = '';
+
+  for (const [sellerId, sellerItems] of itemsBySeller.entries()) {
+    // In-app Notification for Seller
     await Notification.create({
       userId: sellerId,
       title: 'New Order Received',
       message: 'You have received a new order. Check your Seller Dashboard for order details.',
       type: 'order',
     });
+
+    // WhatsApp Notification for Seller
+    try {
+      const sellerUser = await User.findById(sellerId);
+      const waResult = await sendOrderWhatsAppNotification({
+        order,
+        sellerItems,
+        buyerUser: user,
+        sellerUser,
+      });
+
+      if (waResult.status === 'Sent') {
+        lastMessageSid = waResult.messageSid || lastMessageSid;
+      } else {
+        overallWaStatus = 'Failed';
+        lastErrorMessage = waResult.errorMessage || 'Notification failed';
+      }
+    } catch (waError) {
+      console.error(`WhatsApp dispatch error for seller ${sellerId}: ${waError.message}`);
+      overallWaStatus = 'Failed';
+      lastErrorMessage = waError.message;
+    }
   }
 
-  // WhatsApp notification to store owner
   try {
-    const waResult = await sendOrderWhatsAppNotification(order, user);
     order.whatsappStatus = {
-      status: waResult.status,
-      errorMessage: waResult.errorMessage || undefined,
-      messageSid: waResult.messageSid || undefined,
+      status: overallWaStatus,
+      errorMessage: lastErrorMessage || undefined,
+      messageSid: lastMessageSid || undefined,
     };
     await order.save();
-  } catch (waError) {
-    console.error(`WhatsApp dispatch error: ${waError.message}`);
+  } catch (err) {
+    console.error('Error saving order whatsappStatus:', err.message);
   }
 }

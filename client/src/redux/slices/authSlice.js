@@ -73,6 +73,19 @@ export const updateProfile = createAsyncThunk('users/updateProfile', async (form
   }
 });
 
+export const googleAuthUser = createAsyncThunk('auth/googleAuth', async (googleData, thunkAPI) => {
+  try {
+    const response = await API.post('/auth/google', googleData);
+    const { accessToken, user } = response.data;
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('user', JSON.stringify(user));
+    return user;
+  } catch (error) {
+    const message = error.response?.data?.message || 'Google authentication failed';
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -92,6 +105,14 @@ const authSlice = createSlice({
       localStorage.removeItem('user');
       state.user = null;
       state.isAuthenticated = false;
+    },
+    setTokenAndLoadUser: (state, action) => {
+      localStorage.setItem('accessToken', action.payload.token);
+      if (action.payload.user) {
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      }
     }
   },
   extraReducers: (builder) => {
@@ -123,6 +144,20 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Google Auth
+      .addCase(googleAuthUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleAuthUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload;
+      })
+      .addCase(googleAuthUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       // Logout
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
@@ -133,6 +168,13 @@ const authSlice = createSlice({
       .addCase(loadMe.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isAuthenticated = true;
+      })
+      .addCase(loadMe.rejected, (state, action) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = action.payload;
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
       })
       // Update Profile
       .addCase(updateProfile.pending, (state) => {
@@ -150,5 +192,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { clearErrors, forceLogout } = authSlice.actions;
+export const { clearErrors, forceLogout, setTokenAndLoadUser } = authSlice.actions;
 export default authSlice.reducer;

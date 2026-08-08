@@ -12,6 +12,7 @@ export default function Cart() {
   const dispatch = useDispatch();
 
   const { items, loading, activeCoupon, couponError } = useSelector((state) => state.cart);
+  console.log(items)
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const [couponCode, setCouponCode] = useState('');
@@ -82,6 +83,7 @@ export default function Cart() {
 
   // Calculations
   let subTotal = 0;
+  let totalPlatformFee = 0;
   let hasMoqViolations = false;
 
   const processedItems = items.map((item) => {
@@ -97,15 +99,22 @@ export default function Cart() {
     if (p.discount > 0) {
       unitPrice = Math.round(p.price - (p.price * (p.discount / 100)));
     }
+    const platformFee = Math.round((p.platformFee || 0) * 100) / 100;
     const itemTotal = unitPrice * item.quantity;
+
     subTotal += itemTotal;
+    totalPlatformFee += platformFee;
 
     return {
       ...item,
       unitPrice,
+      platformFee,
       itemTotal
     };
   }).filter(Boolean);
+
+  subTotal = Math.round(subTotal * 100) / 100;
+  totalPlatformFee = Math.round(totalPlatformFee * 100) / 100;
 
   let discountAmount = 0;
   if (activeCoupon && subTotal >= activeCoupon.minPurchase) {
@@ -115,9 +124,10 @@ export default function Cart() {
       discountAmount = activeCoupon.discountValue;
     }
   }
+  discountAmount = Math.round(discountAmount * 100) / 100;
 
   const shippingCharges = subTotal > 500 || subTotal === 0 ? 0 : 50; // Free shipping above ₹500
-  const finalTotal = Math.max(0, subTotal - discountAmount + shippingCharges);
+  const finalTotal = Math.round(Math.max(0, subTotal + totalPlatformFee - discountAmount + shippingCharges) * 100) / 100;
 
   const handleCheckoutClick = () => {
     if (hasMoqViolations) {
@@ -275,6 +285,11 @@ export default function Cart() {
                 <div className="flex justify-between text-slate-500">
                   <span>Cart Subtotal:</span>
                   <span className="font-semibold text-slate-850 dark:text-white">{formatINR(subTotal)}</span>
+                </div>
+
+                <div className="flex justify-between text-slate-500">
+                  <span>Platform Fee:</span>
+                  <span className="font-semibold text-slate-850 dark:text-white">{formatINR(totalPlatformFee)}</span>
                 </div>
 
                 {activeCoupon && (

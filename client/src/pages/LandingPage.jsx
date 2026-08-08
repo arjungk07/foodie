@@ -16,7 +16,9 @@ import {
 } from 'lucide-react';
 import API from '../services/api.js';
 import ProductCard from '../components/ProductCard.jsx';
+import ProductCarousel from '../components/ProductCarousel.jsx';
 import { CardSkeleton } from '../components/Skeleton.jsx';
+import { handleImageError, FALLBACK_PRODUCT_IMAGE } from '../utils/imageUtils.js';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -240,63 +242,13 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
 
-      {/* 1. Hero Banner with Glassmorphism */}
-      <section className="relative overflow-hidden bg-linear-to-br from-emerald-50 via-slate-50 to-indigo-50/40 py-20 dark:from-emerald-950/10 dark:via-dark-bg dark:to-slate-900/10 transition-colors duration-200">
-        <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-
-          {/* <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-450 mb-6">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Premium B2B Sourcing Platform</span>
-          </div> */}
-
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl max-w-3xl leading-none">
-            Direct Bulk Sourcing For <span className="text-emerald-600 dark:text-emerald-500">Your Business</span>
-          </h1>
-
-          <p className="mt-6 text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-xl">
-            Register as a buyer to shop bulk products, fashion, electronics, and devices at direct wholesale prices. MOQ rules apply.
-          </p>
-
-          {/* Large Hero Search */}
-          <form onSubmit={handleHeroSearch} className="mt-8 flex w-full max-w-lg rounded-full border border-slate-200 bg-white p-1.5 shadow-md focus-within:ring-2 focus-within:ring-emerald-500 dark:border-slate-800 dark:bg-dark-card dark:focus-within:ring-emerald-600">
-            <input
-              type="text"
-              placeholder="Enter keywords, brand, or category..."
-              value={searchVal}
-              onChange={(e) => setSearchVal(e.target.value)}
-              className="flex-1 px-4 py-2 text-sm focus:outline-none bg-transparent"
-            />
-            <button
-              type="submit"
-              className="rounded-full bg-emerald-600 px-6 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors cursor-pointer"
-            >
-              Search
-            </button>
-          </form>
-
-          {/* Quick Stats */}
-          {/* <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl w-full">
-            <div className="glass-panel p-4 rounded-2xl text-center">
-              <p className="text-2xl font-black text-slate-800 dark:text-white">10k+</p>
-              <p className="text-[10px] text-slate-500 font-semibold uppercase">Active Buyers</p>
-            </div>
-            <div className="glass-panel p-4 rounded-2xl text-center">
-              <p className="text-2xl font-black text-slate-800 dark:text-white">500+</p>
-              <p className="text-[10px] text-slate-500 font-semibold uppercase">Verified Sellers</p>
-            </div>
-            <div className="glass-panel p-4 rounded-2xl text-center">
-              <p className="text-2xl font-black text-slate-800 dark:text-white">35%</p>
-              <p className="text-[10px] text-slate-500 font-semibold uppercase">Avg. Bulk Savings</p>
-            </div>
-            <div className="glass-panel p-4 rounded-2xl text-center">
-              <p className="text-2xl font-black text-slate-800 dark:text-white">24hr</p>
-              <p className="text-[10px] text-slate-500 font-semibold uppercase">Dispatch Target</p>
-            </div>
-          </div> */}
-
-        </div>
-      </section>
+      {/* 1. Professional Product Carousel replacing Hero Banner */}
+      <ProductCarousel
+        products={trendingProducts.length > 0 ? trendingProducts : topDeals}
+        loading={loading}
+        title="Popular Products"
+        subtitle="Exclusive wholesale offers with guaranteed volume pricing"
+      />
 
       {/* 2. Top Categories */}
       <section className="py-16 bg-white dark:bg-dark-card transition-colors duration-200 border-b border-slate-100 dark:border-slate-850">
@@ -304,7 +256,7 @@ export default function LandingPage() {
           <div className="flex justify-between items-end mb-10">
             <div>
               <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 dark:text-white">Top Categories</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Browse wholesale catalogs by business category</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Browse catalogs by business category</p>
             </div>
             <Link to="/products" className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 hover:text-emerald-700">
               <span>View All</span>
@@ -331,11 +283,11 @@ export default function LandingPage() {
                   {/* Category Image */}
                   <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-emerald-50 to-slate-100 p-2 shadow-inner dark:from-slate-800 dark:to-slate-900">
                     <img
-                      src={
-                        cat.image ||
-                        "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop"
-                      }
+                      src={cat.image || FALLBACK_PRODUCT_IMAGE}
                       alt={cat.name}
+                      loading="lazy"
+                      decoding="async"
+                      onError={handleImageError}
                       className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>

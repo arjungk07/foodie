@@ -36,6 +36,12 @@ const productSchema = new mongoose.Schema({
     required: [true, 'Please enter retail price'],
     min: [0, 'Price cannot be negative']
   },
+  platformFee: {
+    type: Number,
+    required: [true, 'Please enter platform fee'],
+    default: 0,
+    min: [0, 'Platform fee cannot be negative']
+  },
   minimumOrderQuantity: {
     type: Number,
     default: 1,
@@ -44,6 +50,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please enter stock level'],
     default: 0
+  },
+  unit: {
+    type: String,
+    default: 'Piece',
+    trim: true
   },
   images: [{
     url: { type: String, required: true },

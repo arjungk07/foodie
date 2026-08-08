@@ -321,7 +321,7 @@ export default function MyOrders() {
                               <span>Seller: <strong className="font-semibold text-slate-650 dark:text-slate-350">{product.sellerId?.fullName || 'Foodie Direct'}</strong></span>
                             </div>
                             <div className="mt-0.5 text-[11px] text-slate-400">
-                              Quantity: <strong className="font-semibold text-slate-700 dark:text-slate-300">{item.quantity}</strong> · Price: <strong className="font-semibold text-slate-700 dark:text-slate-300">{formatPrice(item.price)}</strong>
+                              Quantity: <strong className="font-semibold text-slate-700 dark:text-slate-300">{item.quantity}</strong> · Price: <strong className="font-semibold text-slate-700 dark:text-slate-300">{formatPrice(item.price)}</strong> · Platform Fee: <strong className="font-semibold text-emerald-600">{formatPrice(item.platformFee || product.platformFee || 0)}</strong>
                             </div>
                           </div>
                         </div>
@@ -431,7 +431,7 @@ export default function MyOrders() {
                           <p>Invoice No: <strong className="font-mono text-slate-700 dark:text-slate-300 font-bold">{order.invoiceNumber}</strong></p>
                           <p className="mt-0.5">Method: <strong className="font-semibold text-slate-700 dark:text-slate-300">{order.paymentMethod}</strong></p>
                           <p>Payment ID: <strong className="font-mono text-slate-700 dark:text-slate-300">{order.paymentId || '—'}</strong></p>
-                          <p className="mt-1 font-semibold text-slate-500">Subtotal: {formatPrice(order.subTotal)} {order.discountAmount > 0 && `(Disc: -${formatPrice(order.discountAmount)})`}</p>
+                          <p className="mt-1 font-semibold text-slate-500">Subtotal: {formatPrice(order.subTotal)} · Platform Fee: {formatPrice(order.totalPlatformFee || 0)} {order.discountAmount > 0 && `(Disc: -${formatPrice(order.discountAmount)})`}</p>
                         </div>
                       </div>
 

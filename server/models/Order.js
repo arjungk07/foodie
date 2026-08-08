@@ -14,7 +14,8 @@ const orderSchema = new mongoose.Schema({
     },
     productName: { type: String, required: true },
     quantity: { type: Number, required: true },
-    price: { type: Number, required: true }
+    price: { type: Number, required: true },
+    platformFee: { type: Number, required: true, default: 0, min: 0 }
   }],
   shippingAddress: {
     fullName: { type: String, required: true },
@@ -39,6 +40,7 @@ const orderSchema = new mongoose.Schema({
     type: String
   },
   subTotal: { type: Number, required: true },
+  totalPlatformFee: { type: Number, required: true, default: 0 },
   discountAmount: { type: Number, default: 0 },
   shippingCharges: { type: Number, default: 0 },
   totalAmount: { type: Number, required: true },

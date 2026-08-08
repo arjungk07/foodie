@@ -1,8 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { loadMe } from './redux/slices/authSlice.js';
 
 // Components
 import Navbar from './components/Navbar.jsx';
@@ -47,6 +48,36 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
 }
 
 export default function App() {
+  const dispatch = useDispatch();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+
+  React.useEffect(() => {
+    let token = null;
+
+    if (window.location.search) {
+      const searchParams = new URLSearchParams(window.location.search);
+      token = searchParams.get('token');
+    }
+
+    if (!token && window.location.hash && window.location.hash.includes('?')) {
+      const hashQuery = window.location.hash.split('?')[1];
+      const hashParams = new URLSearchParams(hashQuery);
+      token = hashParams.get('token');
+    }
+
+    if (token) {
+      localStorage.setItem('accessToken', token);
+      dispatch(loadMe());
+      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
+      window.history.replaceState({}, document.title, cleanUrl);
+    } else {
+      const storedToken = localStorage.getItem('accessToken');
+      if (storedToken && (!isAuthenticated || !user)) {
+        dispatch(loadMe());
+      }
+    }
+  }, [dispatch]);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#fafbfd] dark:bg-dark-bg transition-colors duration-200">
       <Navbar />

@@ -313,3 +313,222 @@ export const getMe = async (req, res, next) => {
     next(error);
   }
 };
+
+// ==========================================
+// GOOGLE OAUTH 2.0 CONTROLLER
+// ==========================================
+
+import { OAuth2Client } from 'google-auth-library';
+
+const getOAuthClient = () => {
+  return new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_CALLBACK_URL || 'http://localhost:5000/api/auth/google/callback'
+  );
+};
+
+const processGoogleUser = async ({ email, name, googleId, picture }) => {
+  if (!email) {
+    throw new Error('Google account must have a verified email address.');
+  }
+
+  let user = await User.findOne({ $or: [{ googleId }, { email: email.toLowerCase() }] });
+
+  if (user) {
+    let updated = false;
+    if (!user.googleId) {
+      user.googleId = googleId;
+      updated = true;
+    }
+    if (picture && (!user.avatar || !user.profileImage)) {
+      user.avatar = picture;
+      user.profileImage = picture;
+      updated = true;
+    }
+    if (!user.isVerified) {
+      user.isVerified = true;
+      updated = true;
+    }
+    if (updated) {
+      await user.save();
+    }
+  } else {
+    user = await User.create({
+      fullName: name || 'Google User',
+      email: email.toLowerCase(),
+      googleId,
+      avatar: picture || '',
+      profileImage: picture || '',
+      isVerified: true,
+      role: 'customer'
+    });
+
+    await Cart.create({ userId: user._id, items: [] });
+    await Wishlist.create({ userId: user._id, products: [] });
+  }
+
+  return user;
+};
+
+// @desc    Authenticate with Google OAuth 2.0 (ID token / credential / code)
+// @route   POST /api/auth/google
+// @access  Public
+export const googleAuth = async (req, res, next) => {
+  try {
+    const { credential, token, code } = req.body;
+    let googleId, email, name, picture;
+
+    const oauthClient = getOAuthClient();
+
+    if (credential || token) {
+      const idToken = credential || token;
+      const ticket = await oauthClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID
+      });
+      const payload = ticket.getPayload();
+      googleId = payload.sub;
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+    } else if (code) {
+      const { tokens } = await oauthClient.getToken(code);
+      oauthClient.setCredentials(tokens);
+      const ticket = await oauthClient.verifyIdToken({
+        idToken: tokens.id_token,
+        audience: process.env.GOOGLE_CLIENT_ID
+      });
+      const payload = ticket.getPayload();
+      googleId = payload.sub;
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+    } else {
+      res.status(400);
+      throw new Error('Google credential or token is required.');
+    }
+
+    const user = await processGoogleUser({ email, name, googleId, picture });
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.status(200).json({
+      success: true,
+      accessToken,
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        mobile: user.mobile,
+        role: user.role,
+        profileImage: user.profileImage || user.avatar,
+        avatar: user.avatar,
+        isVerified: user.isVerified
+      }
+    });
+  } catch (error) {
+    console.error('Google Auth Error:', error.message);
+    res.status(401);
+    next(new Error(`Google authentication failed: ${error.message}`));
+  }
+};
+
+// @desc    Redirect to Google OAuth 2.0 authorization page
+// @route   GET /api/auth/google
+// @access  Public
+export const getGoogleAuthUrl = async (req, res, next) => {
+  try {
+    const oauthClient = getOAuthClient();
+    const url = oauthClient.generateAuthUrl({
+      access_type: 'offline',
+      scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'],
+      prompt: 'select_account'
+    });
+    res.redirect(url);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Google OAuth 2.0 Callback handler
+// @route   GET /api/auth/google/callback
+// @access  Public
+export const googleAuthCallback = async (req, res, next) => {
+  try {
+    const { code, error } = req.query;
+
+    const clientUrl =
+      process.env.CLIENT_URL || 'http://localhost:5173';
+
+    if (error || !code) {
+      return res.redirect(
+        `${clientUrl}/foodie/login?error=${encodeURIComponent(
+          error || 'Google authentication was cancelled'
+        )}`
+      );
+    }
+
+    const oauthClient = getOAuthClient();
+
+    const { tokens } = await oauthClient.getToken(code);
+
+    oauthClient.setCredentials(tokens);
+
+    const ticket = await oauthClient.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+
+    const user = await processGoogleUser({
+      email: payload.email,
+      name: payload.name,
+      googleId: payload.sub,
+      picture: payload.picture
+    });
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite:
+        process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    // Redirect to Foodie frontend
+    res.redirect(
+      `${clientUrl}/foodie/login?token=${accessToken}`
+    );
+
+  } catch (error) {
+    console.error('Google Callback Error:', error.message);
+
+    const clientUrl =
+      process.env.CLIENT_URL || 'http://localhost:5173';
+
+    res.redirect(
+      `${clientUrl}/foodie/login?error=${encodeURIComponent(
+        'Google authentication failed. Please try again.'
+      )}`
+    );
+  }
+};

@@ -7,12 +7,19 @@ export default function Footer() {
     <footer className="border-t border-slate-200/60 bg-white text-slate-600 dark:border-slate-850 dark:bg-dark-bg dark:text-slate-400 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          
+
           {/* Brand Info */}
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-2 font-bold text-xl text-emerald-600 dark:text-emerald-500">
-              <Store className="h-6 w-6" />
-              <span>Foodie</span>
+              <img
+                src="./src/assets/logo.jpg"
+                alt="Foodie logo"
+                className="h-17 w-18"
+                style={{
+                  filter:
+                    "brightness(0) saturate(100%) invert(48%) sepia(90%) saturate(600%) hue-rotate(95deg)"
+                }}
+              />              <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie</span>
             </Link>
             <p className="text-xs leading-relaxed text-slate-500">
               The best place to buy groceries in bulk. Minimum order quantities (MOQ) to connect high-volume distributors with bulk retail discounts.

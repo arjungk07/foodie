@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Heart, ShoppingCart, Star } from 'lucide-react';
+import { HeartIcon, ShoppingCart, Star } from 'lucide-react';
 import { addToCart } from '../redux/slices/cartSlice.js';
 import { toast } from 'react-toastify';
 import API from '../services/api.js';
 import { formatINR } from '../utils/currency.js';
+import { handleImageError, FALLBACK_PRODUCT_IMAGE } from '../utils/imageUtils.js';
 
 export default function ProductCard({ product, onWishlistUpdate }) {
   const dispatch = useDispatch();
@@ -58,11 +59,14 @@ export default function ProductCard({ product, onWishlistUpdate }) {
       <Link to={`/products/${product._id}`} className="flex flex-col flex-1">
         
         {/* Product Image Box */}
-        <div className="relative h-40 w-full overflow-hidden bg-slate-50 dark:bg-slate-900/40 flex items-center justify-center p-3 border-b border-slate-100 dark:border-slate-850">
+        <div className="relative h-48 md:h-44 w-full overflow-hidden bg-slate-50 dark:bg-slate-900/40 flex items-center justify-center p-3 border-b border-slate-100 dark:border-slate-850">
           <img
-            src={product.images?.[0]?.url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600'}
+            src={product.images?.[0]?.url || FALLBACK_PRODUCT_IMAGE}
             alt={product.productName}
-            className="h-full max-h-full w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
+            onError={handleImageError}
+            className="h-full max-h-full w-full max-w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           
           {/* Discount Badge */}
@@ -75,9 +79,9 @@ export default function ProductCard({ product, onWishlistUpdate }) {
           {/* Wishlist Button */}
           <button 
             onClick={handleToggleWishlist}
-            className="absolute right-2.5 top-2.5 z-10 p-1.5 rounded-full bg-white/80 backdrop-blur-xs shadow-xs text-slate-500 hover:text-rose-500 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:text-rose-500 transition-all hover:scale-110 duration-200 cursor-pointer"
+            className="absolute right-1 top-1 z-10 p-1.5 rounded-full bg-white backdrop-blur-xs shadow-xs text-slate-500 hover:text-rose-500 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:text-rose-500 transition-all hover:scale-110 duration-200 cursor-pointer"
           >
-            <Heart className="h-3.5 w-3.5" />
+            <HeartIcon className="h-4 w-4 text-black" />
           </button>
         </div>
 

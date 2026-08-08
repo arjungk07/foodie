@@ -90,13 +90,21 @@ export default function Checkout() {
 
   // ── Price Calculations ──────────────────────────────────────────────────────
   let subTotal = 0;
+  let totalPlatformFee = 0;
   items.forEach((item) => {
     const p = item.productId;
     if (!p) return;
     let price = p.price;
     if (p.discount > 0) price = price - price * (p.discount / 100);
+    price = Math.round(price * 100) / 100;
+    const platformFee = Math.round((p.platformFee || 0) * 100) / 100;
+
     subTotal += price * item.quantity;
+    totalPlatformFee += platformFee;
   });
+
+  subTotal = Math.round(subTotal * 100) / 100;
+  totalPlatformFee = Math.round(totalPlatformFee * 100) / 100;
 
   let discountAmount = 0;
   if (activeCoupon && subTotal >= activeCoupon.minPurchase) {
@@ -105,9 +113,10 @@ export default function Checkout() {
         ? subTotal * (activeCoupon.discountValue / 100)
         : activeCoupon.discountValue;
   }
+  discountAmount = Math.round(discountAmount * 100) / 100;
 
   const shippingCharges = subTotal > 500 || subTotal === 0 ? 0 : 50;
-  const finalTotal = Math.max(0, subTotal - discountAmount + shippingCharges);
+  const finalTotal = Math.round(Math.max(0, subTotal + totalPlatformFee - discountAmount + shippingCharges) * 100) / 100;
 
   // ── Place Order ─────────────────────────────────────────────────────────────
   const handlePlaceOrder = async () => {
@@ -217,6 +226,23 @@ export default function Checkout() {
     }
   };
 
+  //UPI Payment
+  const handleUPIPayment = () => {
+    setPaymentMethod('UPI');
+
+    const upiId = import.meta.env.VITE_UPI_ID;
+    const name = import.meta.env.VITE_UPI_NAME;
+    const amount = finalTotal;
+
+    const upiUrl =
+      `upi://pay?pa=${encodeURIComponent(upiId)}` +
+      `&pn=${encodeURIComponent(name)}` +
+      `&am=${encodeURIComponent(amount)}` +
+      `&cu=INR`;
+
+    window.location.href = upiUrl;
+  };
+
   // ── Empty cart guard ────────────────────────────────────────────────────────
   if (items.length === 0) {
     return (
@@ -258,11 +284,10 @@ export default function Checkout() {
                 {addresses.map((addr) => (
                   <label
                     key={addr._id}
-                    className={`flex gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                      selectedAddressId === addr._id
-                        ? 'border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/10'
-                        : 'border-slate-200 hover:bg-slate-50/40 dark:border-slate-800'
-                    }`}
+                    className={`flex gap-3 p-4 rounded-xl border cursor-pointer transition-all ${selectedAddressId === addr._id
+                      ? 'border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/10'
+                      : 'border-slate-200 hover:bg-slate-50/40 dark:border-slate-800'
+                      }`}
                   >
                     <input
                       type="radio"
@@ -344,11 +369,10 @@ export default function Checkout() {
             <div className="flex flex-col gap-3">
 
               {/* Cash On Delivery */}
-              <label className={`flex justify-between items-center p-4 rounded-xl border cursor-pointer transition-all ${
-                paymentMethod === 'COD'
-                  ? 'border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/10'
-                  : 'border-slate-200 dark:border-slate-800'
-              }`}>
+              <label className={`flex justify-between items-center p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'COD'
+                ? 'border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/10'
+                : 'border-slate-200 dark:border-slate-800'
+                }`}>
                 <div className="flex items-center gap-3">
                   <input type="radio" name="payment" checked={paymentMethod === 'COD'}
                     onChange={() => setPaymentMethod('COD')}
@@ -361,6 +385,35 @@ export default function Checkout() {
                     <p className="text-slate-500 mt-0.5">Pay with corporate check or cash upon dispatch arrival.</p>
                   </div>
                 </div>
+              </label>
+
+              {/* UPI Payment */}
+              <label
+                className={`flex justify-between items-center p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'UPI'
+                  ? 'border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/10'
+                  : 'border-slate-200 dark:border-slate-800'
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === 'UPI'}
+                    onChange={() => handleUPIPayment()}
+                    className="text-emerald-600 focus:ring-emerald-500 h-4 w-4"
+                  />
+
+                  <div>
+                    <p className="font-semibold">Pay via GPay / UPI</p>
+                    <p className="text-sm text-slate-500">
+                      Pay securely using Google Pay or another UPI app
+                    </p>
+                  </div>
+                </div>
+
+                <span className="font-semibold text-emerald-600">
+                  ₹{finalTotal}
+                </span>
               </label>
 
               {/* Razorpay */}
@@ -426,6 +479,10 @@ export default function Checkout() {
               <div className="flex justify-between text-slate-500">
                 <span>Subtotal:</span>
                 <span>{formatINR(subTotal)}</span>
+              </div>
+              <div className="flex justify-between text-slate-500">
+                <span>Platform Fee:</span>
+                <span>{formatINR(totalPlatformFee)}</span>
               </div>
               {activeCoupon && (
                 <div className="flex justify-between text-emerald-600 font-medium">

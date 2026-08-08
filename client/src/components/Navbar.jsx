@@ -5,6 +5,7 @@ import { ShoppingCart, Heart, Bell, Sun, Moon, LogOut, User as UserIcon, Search,
 import { logoutUser, forceLogout } from '../redux/slices/authSlice.js';
 import { fetchCart } from '../redux/slices/cartSlice.js';
 import API from '../services/api.js';
+import { handleImageError, FALLBACK_PRODUCT_IMAGE } from '../utils/imageUtils.js';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function Navbar() {
   const [trending, setTrending] = useState([]);
   const [searchHistory, setSearchHistory] = useState(JSON.parse(localStorage.getItem('searchHistory')) || []);
   const searchContainerRef = useRef(null);
+  const mobileSearchContainerRef = useRef(null);
 
   // Toggle Theme
   useEffect(() => {
@@ -50,7 +52,9 @@ export default function Navbar() {
   useEffect(() => {
     fetchTrending();
     const handleClickOutside = (e) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+      const isInsideDesktop = searchContainerRef.current && searchContainerRef.current.contains(e.target);
+      const isInsideMobile = mobileSearchContainerRef.current && mobileSearchContainerRef.current.contains(e.target);
+      if (!isInsideDesktop && !isInsideMobile) {
         setIsSearchFocused(false);
       }
     };
@@ -201,8 +205,16 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-emerald-600 dark:text-emerald-500">
-            <Store className="h-6 w-6" />
-            <span>Foodie</span>
+            <img
+              src="./src/assets/logo.jpg"
+              alt="Foodie logo"
+              className="h-17 w-18"
+              style={{
+                filter:
+                  "brightness(0) saturate(100%) invert(48%) sepia(90%) saturate(600%) hue-rotate(95deg)"
+              }}
+            />
+            <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie</span>
           </Link>
 
           {/* Search Bar - Desktop */}
@@ -214,14 +226,12 @@ export default function Navbar() {
                 value={searchQuery}
                 onFocus={() => setIsSearchFocused(true)}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 dark:bg-dark-card dark:border-slate-800 dark:focus:ring-emerald-600 dark:focus:bg-dark-card transition-all"
+                className="w-full pl-10 pr-4 py-2 text-md rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 dark:bg-dark-card dark:border-slate-800 dark:focus:ring-emerald-600 dark:focus:bg-dark-card transition-all"
               />
-              <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-3.25 h-4 w-4 text-slate-400" />
             </form>
-
-            {/* Suggestions dropdown */}
             {isSearchFocused && (
-              <div className="absolute top-12 left-0 right-0 max-h-96 overflow-y-auto rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-xl backdrop-blur-md dark:border-slate-800/80 dark:bg-dark-card/95 transition-all animate-fadeIn">
+              <div className="absolute top-12 left-0 right-0 max-h-80 overflow-y-auto rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-xl backdrop-blur-md dark:border-slate-800/80 dark:bg-dark-card/95 transition-all animate-fadeIn z-50">
                 {searchQuery.trim().length === 0 ? (
                   <div className="flex flex-col gap-4">
                     {/* Search History */}
@@ -326,9 +336,12 @@ export default function Navbar() {
                               className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
                             >
                               <img
-                                src={prod.images?.[0]?.url || 'https://via.placeholder.com/40'}
+                                src={prod.images?.[0]?.url || FALLBACK_PRODUCT_IMAGE}
                                 alt={prod.productName}
-                                className="h-8 w-8 rounded-md object-cover bg-slate-100 border border-slate-100 dark:border-slate-800"
+                                loading="lazy"
+                                decoding="async"
+                                onError={handleImageError}
+                                className="h-8 w-8 rounded-md object-contain bg-slate-50 border border-slate-200 dark:border-slate-800 shrink-0"
                               />
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs font-semibold truncate text-slate-850 dark:text-slate-200">
@@ -545,6 +558,161 @@ export default function Navbar() {
             </button>
           </div>
 
+        </div>
+
+        {/* Mobile Search Bar Row (Visible only on mobile < md) */}
+        <div ref={mobileSearchContainerRef} className="md:hidden relative pb-3 pt-1">
+          <form onSubmit={handleSearchSubmit} className="relative w-full">
+            <input
+              type="text"
+              placeholder="Search products, brands..."
+              value={searchQuery}
+              onFocus={() => setIsSearchFocused(true)}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 dark:bg-dark-card dark:border-slate-800 dark:focus:ring-emerald-600 dark:focus:bg-dark-card transition-all shadow-xs"
+            />
+            <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+          </form>
+
+          {/* Mobile Suggestions dropdown */}
+          {isSearchFocused && (
+            <div className="absolute top-14 left-0 right-0 max-h-80 overflow-y-auto rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-xl backdrop-blur-md dark:border-slate-800/80 dark:bg-dark-card/95 transition-all animate-fadeIn z-50">
+              {searchQuery.trim().length === 0 ? (
+                <div className="flex flex-col gap-4">
+                  {/* Search History */}
+                  {searchHistory.length > 0 && (
+                    <div>
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                        <History className="h-3 w-3" /> Recent Searches
+                      </h4>
+                      <div className="flex flex-col gap-1.5">
+                        {searchHistory.map((item, index) => (
+                          <div
+                            key={index}
+                            onClick={() => handleSuggestionClick('query', item)}
+                            className="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-100 dark:hover:bg-slate-800/50 cursor-pointer text-slate-700 dark:text-slate-350"
+                          >
+                            <span>{item}</span>
+                            <button
+                              onClick={(e) => handleDeleteHistoryItem(e, item)}
+                              className="text-slate-450 hover:text-red-500 p-0.5 cursor-pointer"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Frequently Searched */}
+                  {trending.length > 0 && (
+                    <div>
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" /> Frequently Searched
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {trending.map((item, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleSuggestionClick('query', item)}
+                            className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-450 text-xs transition-colors cursor-pointer"
+                          >
+                            {item}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {searchHistory.length === 0 && trending.length === 0 && (
+                    <div className="text-center py-4 text-xs text-slate-400">
+                      Type to start searching...
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {/* Category suggestions */}
+                  {suggestions.categories.length > 0 && (
+                    <div>
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Categories</h4>
+                      <div className="flex flex-col">
+                        {suggestions.categories.map((cat) => (
+                          <div
+                            key={cat._id}
+                            onClick={() => handleSuggestionClick('category', cat)}
+                            className="px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer font-medium"
+                          >
+                            {highlightMatch(cat.name, searchQuery)}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Brand suggestions */}
+                  {suggestions.brands.length > 0 && (
+                    <div>
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Brands</h4>
+                      <div className="flex flex-col">
+                        {suggestions.brands.map((brand, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => handleSuggestionClick('brand', brand)}
+                            className="px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer font-medium"
+                          >
+                            {highlightMatch(brand, searchQuery)}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Product suggestions */}
+                  {suggestions.products.length > 0 && (
+                    <div>
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Products</h4>
+                      <div className="flex flex-col gap-1">
+                        {suggestions.products.map((prod) => (
+                          <div
+                            key={prod._id}
+                            onClick={() => handleSuggestionClick('product', prod)}
+                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
+                          >
+                            <img
+                              src={prod.images?.[0]?.url || FALLBACK_PRODUCT_IMAGE}
+                              alt={prod.productName}
+                              loading="lazy"
+                              decoding="async"
+                              onError={handleImageError}
+                              className="h-8 w-8 rounded-md object-contain bg-slate-50 border border-slate-200 dark:border-slate-800 shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold truncate text-slate-850 dark:text-slate-200">
+                                {highlightMatch(prod.productName, searchQuery)}
+                              </p>
+                              <p className="text-[10px] text-slate-450 mt-0.5">
+                                Price: <span className="text-emerald-600 font-bold">₹{prod.price}</span>
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {suggestions.categories.length === 0 &&
+                    suggestions.brands.length === 0 &&
+                    suggestions.products.length === 0 && (
+                      <div className="text-center py-4 text-xs text-slate-400">
+                        No matches found.
+                      </div>
+                    )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

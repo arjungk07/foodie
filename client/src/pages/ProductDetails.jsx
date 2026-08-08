@@ -17,7 +17,6 @@ export default function ProductDetails() {
   const { currentProduct, relatedProducts, reviews, loading, error } = useSelector(
     (state) => state.products
   );
-  console.log(currentProduct)
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const [quantity, setQuantity] = useState(1);
@@ -100,7 +99,7 @@ export default function ProductDetails() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <div className="w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
 
       {/* Breadcrumbs */}
       <Breadcrumbs
@@ -168,7 +167,7 @@ export default function ProductDetails() {
                 )}
               </span>
 
-              {currentProduct.discount && (
+              {currentProduct.discount > 0 && (
                 <>
                   <span className="text-sm text-slate-400 line-through dark:text-slate-500 ml-1">
                     {formatINR(currentProduct.price)}
@@ -189,6 +188,13 @@ export default function ProductDetails() {
                   Minimum Order Qty (MOQ):
                 </span>
                 <span className="font-extrabold">{currentProduct.minimumOrderQuantity} units</span>
+              </div>
+
+              <div className="flex justify-between items-center px-3.5 py-2">
+                <span className="text-slate-500">Platform Fees:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {formatINR(currentProduct.platformFee || 0)} 
+                </span>
               </div>
 
               <div className="flex justify-between items-center px-3.5 py-2">

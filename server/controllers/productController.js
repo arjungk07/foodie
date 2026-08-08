@@ -21,7 +21,8 @@ export const getProducts = async (req, res, next) => {
       discount,
       sort,
       page = 1,
-      limit = 12
+      limit = 12,
+      all
     } = req.query;
 
     const queryObj = {};
@@ -109,9 +110,11 @@ export const getProducts = async (req, res, next) => {
       apiQuery = apiQuery.sort('-createdAt');
     }
 
-    // Pagination
-    const skip = (Number(page) - 1) * Number(limit);
-    apiQuery = apiQuery.skip(skip).limit(Number(limit));
+    // Pagination (bypassed if all=true)
+    if (req.query.all !== 'true') {
+      const skip = (Number(page) - 1) * Number(limit);
+      apiQuery = apiQuery.skip(skip).limit(Number(limit));
+    }
 
     const products = await apiQuery;
     const totalProducts = await Product.countDocuments(queryObj);
@@ -178,6 +181,7 @@ export const createProduct = async (req, res, next) => {
       brand,
       SKU,
       price,
+      platformFee,
       minimumOrderQuantity,
       stock,
       specifications,
@@ -231,6 +235,7 @@ export const createProduct = async (req, res, next) => {
       brand,
       SKU,
       price: Number(price),
+      platformFee: Math.max(0, Number(platformFee || 0)),
       minimumOrderQuantity: Number(minimumOrderQuantity || 10),
       stock: Number(stock || 0),
       images,
@@ -276,6 +281,7 @@ export const updateProduct = async (req, res, next) => {
       brand,
       SKU,
       price,
+      platformFee,
       minimumOrderQuantity,
       stock,
       specifications,
@@ -336,6 +342,7 @@ export const updateProduct = async (req, res, next) => {
     product.brand = brand || product.brand;
     product.SKU = SKU || product.SKU;
     product.price = price !== undefined ? Number(price) : product.price;
+    if (platformFee !== undefined) product.platformFee = Math.max(0, Number(platformFee));
     product.minimumOrderQuantity = minimumOrderQuantity !== undefined ? Number(minimumOrderQuantity) : product.minimumOrderQuantity;
     product.stock = stock !== undefined ? Number(stock) : product.stock;
     product.images = updatedImages;
@@ -422,7 +429,7 @@ export const getSearchSuggestions = async (req, res, next) => {
 
     // 1. Search products
     const products = await Product.find({ productName: regex })
-      .select('productName price images')
+      .select('productName price platformFee images')
       .limit(5);
 
     // 2. Search categories

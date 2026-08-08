@@ -17,13 +17,23 @@ const userSchema = new mongoose.Schema({
   },
   mobile: { 
     type: String, 
-    required: [true, 'Please enter your mobile number'],
+    required: [function() { return !this.googleId; }, 'Please enter your mobile number'],
+    default: '',
     trim: true
   },
   password: { 
     type: String, 
-    required: [true, 'Please enter a password'],
+    required: [function() { return !this.googleId; }, 'Please enter a password'],
     minlength: [6, 'Password must be at least 6 characters']
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  avatar: {
+    type: String,
+    default: ''
   },
   role: { 
     type: String, 

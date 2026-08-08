@@ -7,7 +7,10 @@ import {
   verifyEmail,
   forgotPassword,
   resetPassword,
-  getMe
+  getMe,
+  googleAuth,
+  getGoogleAuthUrl,
+  googleAuthCallback
 } from '../controllers/authController.js';
 import { updateProfile } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
@@ -22,6 +25,11 @@ router.post('/logout', logout);
 router.get('/verify-email/:token', verifyEmail);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
+
+// Google OAuth 2.0 routes
+router.post('/google', googleAuth);
+router.get('/google', getGoogleAuthUrl);
+router.get('/google/callback', googleAuthCallback);
 
 // GET /api/auth/me  — original route (kept for backward compat)
 router.get('/me', protect, getMe);

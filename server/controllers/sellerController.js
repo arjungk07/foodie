@@ -3,6 +3,27 @@ import Product from '../models/Product.js';
 import Review from '../models/Review.js';
 import { ensureTimelineAndStatus } from './orderController.js';
 
+// @desc    Get all products for seller dashboard without customer pagination limits
+// @route   GET /api/seller/products
+// @access  Private (Seller/Admin)
+export const getAllProductsForSeller = async (req, res, next) => {
+  try {
+    const filter = req.user.role === 'admin' ? {} : { sellerId: req.user.id };
+    const products = await Product.find(filter)
+      .populate('category', 'name slug')
+      .sort('-createdAt');
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      totalProducts: products.length,
+      products
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get Seller Dashboard Statistics
 // @route   GET /api/seller/stats
 // @access  Private (Seller)
@@ -88,7 +109,7 @@ export const getSellerOrders = async (req, res, next) => {
       .populate("userId", "fullName email mobile")
       .populate({
         path: "items.productId",
-        select: "productName images brand SKU sellerId",
+        select: "productName platformFee images brand SKU sellerId",
         populate: {
           path: "sellerId",
           select: "fullName"
