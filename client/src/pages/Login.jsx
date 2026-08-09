@@ -116,7 +116,7 @@ export default function Login() {
         {/* Header */}
         <div className="text-center flex flex-col items-center">
           <Link to="/" className="inline-flex items-center gap-2 font-bold text-2xl text-emerald-600 dark:text-emerald-500 mb-1">
-            <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie</span>
+            <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie </span>
             <img
               src={logoImg}
               alt="Foodie logo"
