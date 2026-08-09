@@ -65,12 +65,13 @@ export default function App() {
       token = hashParams.get('token');
     }
 
-    if (token) {
+    // Only process token in App.jsx if NOT on /login route (Login.jsx handles /login)
+    if (token && !window.location.pathname.endsWith('/login')) {
       localStorage.setItem('accessToken', token);
       dispatch(loadMe());
-      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
+      const cleanUrl = window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
-    } else {
+    } else if (!token) {
       const storedToken = localStorage.getItem('accessToken');
       if (storedToken && (!isAuthenticated || !user)) {
         dispatch(loadMe());

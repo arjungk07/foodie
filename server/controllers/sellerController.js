@@ -162,7 +162,7 @@ export const getSellerReviews = async (req, res, next) => {
     const productIds = products.map(p => p._id);
 
     const reviews = await Review.find({ productId: { $in: productIds } })
-      .populate('userId', 'fullName profileImage')
+      .populate('userId', 'fullName email')
       .populate('productId', 'productName images')
       .sort('-createdAt');
 

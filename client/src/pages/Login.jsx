@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, User } from 'lucide-react';
 import { loginUser, loadMe, clearErrors } from '../redux/slices/authSlice.js';
 import logoImg from '../assets/logo.jpg';
 
@@ -13,22 +13,23 @@ export default function Login() {
 
   const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Check URL query parameters for Google OAuth callback token or error
   useEffect(() => {
     let token = null;
     let errorParam = null;
 
-    // Check window.location.search (?token=...)
+    // Check window.location.search (?token=... or ?error=...)
     if (window.location.search) {
       const searchParams = new URLSearchParams(window.location.search);
       token = searchParams.get('token');
       errorParam = searchParams.get('error');
     }
 
-    // Check location.search or HashRouter hash (?token=...)
+    // Check location.search or HashRouter hash (?token=... or ?error=...)
     if (!token && !errorParam) {
       const searchStr = location.search || (window.location.hash.includes('?') ? window.location.hash.split('?')[1] : '');
       if (searchStr) {
@@ -40,22 +41,32 @@ export default function Login() {
 
     if (token) {
       localStorage.setItem('accessToken', token);
+      
+      // Clean up URL parameter to remove token from address bar
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+
       dispatch(loadMe())
         .unwrap()
-        .then(() => {
+        .then((userData) => {
           toast.success('Logged in with Google successfully!');
-          navigate('/');
+          const from = location.state?.from?.pathname;
+          if (from) {
+            navigate(from, { replace: true });
+          } else if (userData?.role === 'admin') {
+            navigate('/admin', { replace: true });
+          } else if (userData?.role === 'seller') {
+            navigate('/seller', { replace: true });
+          } else {
+            navigate('/', { replace: true });
+          }
         })
         .catch((err) => {
           toast.error(err || 'Failed to fetch Google user profile');
         });
-
-      // Clean up URL parameter to remove token from address bar
-      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
-      window.history.replaceState({}, document.title, cleanUrl);
     } else if (errorParam) {
       toast.error(decodeURIComponent(errorParam));
-      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
+      const cleanUrl = window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
     }
   }, [location.search, dispatch, navigate]);
@@ -86,11 +97,11 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.warning('Please enter email and password credentials');
+    if (!identifier || !password) {
+      toast.warning('Please enter email/phone and password credentials');
       return;
     }
-    dispatch(loginUser({ email, password }));
+    dispatch(loginUser({ identifier, email: identifier, password }));
   };
 
   const handleGoogleAuth = () => {
@@ -103,20 +114,20 @@ export default function Login() {
       <div className="glass-panel w-full max-w-md p-8 rounded-3xl shadow-xl flex flex-col gap-6">
 
         {/* Header */}
-        <div className="text-center">
-          <Link to="/" className="inline-flex items-center gap-2 font-bold text-2xl text-emerald-600 dark:text-emerald-500 mb-2">
+        <div className="text-center flex flex-col items-center">
+          <Link to="/" className="inline-flex items-center gap-2 font-bold text-2xl text-emerald-600 dark:text-emerald-500 mb-1">
             <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie</span>
             <img
               src={logoImg}
               alt="Foodie logo"
-              className="h-17 w-18"
+              className="h-14 w-15"
               style={{
                 filter:
                   "brightness(0) saturate(100%) invert(48%) sepia(90%) saturate(600%) hue-rotate(95deg)"
               }}
             />
           </Link>
-          <h2 className="dancing-script text-2xl font-bold tracking-tight">Login</h2>
+          <h2 className="text-xl dancing-script font-extrabold tracking-wider text-slate-800 dark:text-slate-100">Welcome back to Foodie</h2>
         </div>
 
         {/* Google OAuth Button */}
@@ -136,47 +147,55 @@ export default function Login() {
 
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-          <span className="text-[10px] font-semibold text-slate-400 uppercase">Or sign in with email</span>
+          <span className="text-[10px] font-semibold text-slate-400 uppercase">Or sign in with email or phone</span>
           <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-          {/* Email */}
+          {/* Email or Phone */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-650 dark:text-slate-350">Email</label>
+            <label className="text-[16px] dancing-script font-semibold text-slate-650 dark:text-slate-350">Email or Phone Number</label>
             <div className="relative">
               <input
-                type="email"
+                type="text"
                 required
-                placeholder="example@gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder='example@gmail.com'
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 dark:bg-dark-card dark:border-slate-800"
               />
-              <Mail className="absolute left-3.5 top-3 h-4.5 w-4.5 text-slate-400" />
+              <User className="absolute left-3.5 top-3 h-4.5 w-4.5 text-slate-400" />
             </div>
           </div>
 
           {/* Password */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold text-slate-650 dark:text-slate-350">Password</label>
+              <label className="text-lg dancing-script font-semibold text-slate-650 dark:text-slate-350">password</label>
               <Link to="/forgot-password" className="text-[10px] text-emerald-600 hover:underline">
                 Forgot password?
               </Link>
             </div>
             <div className="relative">
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 dark:bg-dark-card dark:border-slate-800"
+                className="w-full pl-10 pr-10 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 dark:bg-dark-card dark:border-slate-800"
               />
               <Lock className="absolute left-3.5 top-3 h-4.5 w-4.5 text-slate-400" />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3.5 top-2.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none cursor-pointer"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
             </div>
           </div>
 

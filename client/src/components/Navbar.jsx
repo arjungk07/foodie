@@ -467,13 +467,9 @@ export default function Navbar() {
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                     className="flex items-center gap-2 p-1.5 rounded-full border border-slate-200 hover:border-emerald-500 dark:border-slate-850 focus:outline-none"
                   >
-                    {user.profileImage ? (
-                      <img src={user.profileImage} alt={user.fullName} className="h-7 w-7 rounded-full object-cover" />
-                    ) : (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                        <UserIcon className="h-4 w-4" />
-                      </div>
-                    )}
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+                      <UserIcon className="h-4 w-4" />
+                    </div>
                     <span className="text-xs font-medium pr-1 text-slate-700 dark:text-slate-300">{user.fullName.split(' ')[0]}</span>
                   </button>
 
@@ -754,7 +750,7 @@ export default function Navbar() {
           <div className="max-h-[calc(100vh-80px)] overflow-y-auto px-5 py-5">
 
             {/* Search */}
-            <form onSubmit={handleSearchSubmit} className="relative mb-5">
+            {/* <form onSubmit={handleSearchSubmit} className="relative mb-5">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
 
               <input
@@ -783,7 +779,7 @@ export default function Navbar() {
             dark:focus:ring-emerald-900/30
           "
               />
-            </form>
+            </form> */}
 
             {/* Navigation */}
             <div className="space-y-2">

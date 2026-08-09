@@ -53,7 +53,7 @@ router.get('/notifications', getNotifications);
 router.put('/notifications/:id/read', markNotificationRead);
 
 // Profile & Password Routes
-router.put('/updateprofile', upload.single('profileImage'), updateProfile);
+router.put('/updateprofile', updateProfile);
 router.put('/change-password', changePassword);
 
 export default router;

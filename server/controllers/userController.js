@@ -304,10 +304,6 @@ export const addReview = async (req, res, next) => {
 export const updateProfile = async (req, res, next) => {
   const { fullName, mobile } = req.body;
 
-  console.log('[DEBUG] updateProfile invoked');
-  console.log('[DEBUG] req.body:', req.body);
-  console.log('[DEBUG] req.file:', req.file);
-
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -315,19 +311,9 @@ export const updateProfile = async (req, res, next) => {
       throw new Error('User not found');
     }
 
-    if (req.file) {
-      console.log('[DEBUG] File found, starting Cloudinary upload...');
-      const uploadResult = await uploadImage(req.file.buffer, CLOUDINARY_FOLDERS.PROFILES);
-      console.log('[DEBUG] Cloudinary upload success:', uploadResult);
-      user.profileImage = uploadResult.secure_url;
-    } else {
-      console.log('[DEBUG] No req.file received by controller.');
-    }
-
     user.fullName = fullName || user.fullName;
     user.mobile = mobile || user.mobile;
     await user.save();
-    console.log('[DEBUG] User updated in MongoDB:', user);
 
     res.status(200).json({
       success: true,
@@ -338,7 +324,6 @@ export const updateProfile = async (req, res, next) => {
         email: user.email,
         mobile: user.mobile,
         role: user.role,
-        profileImage: user.profileImage,
         isVerified: user.isVerified
       }
     });

@@ -37,7 +37,7 @@ router.get('/me', protect, getMe);
 // GET /api/auth/profile  — alias for /me (resolves "Not Found" error)
 router.get('/profile', protect, getMe);
 
-// PUT /api/auth/profile  — update profile + optional image upload
-router.put('/profile', protect, upload.single('profileImage'), updateProfile);
+// PUT /api/auth/profile — update profile
+router.put('/profile', protect, updateProfile);
 
 export default router;

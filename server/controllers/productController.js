@@ -154,7 +154,7 @@ export const getProductById = async (req, res, next) => {
 
     // Fetch reviews
     const reviews = await Review.find({ productId: product._id })
-      .populate('userId', 'fullName profileImage')
+      .populate('userId', 'fullName email')
       .sort('-createdAt');
 
     res.status(200).json({

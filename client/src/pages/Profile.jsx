@@ -20,7 +20,6 @@ export default function Profile() {
   // Profile Form State
   const [fullName, setFullName] = useState('');
   const [mobile, setMobile] = useState('');
-  const [profileImageFile, setProfileImageFile] = useState(null);
 
   // Password Form State
   const [oldPassword, setOldPassword] = useState('');
@@ -84,13 +83,7 @@ export default function Profile() {
 
   const handleProfileUpdate = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('fullName', fullName);
-    formData.append('mobile', mobile);
-    if (profileImageFile) {
-      formData.append('profileImage', profileImageFile);
-    }
-    dispatch(updateProfile(formData));
+    dispatch(updateProfile({ fullName, mobile }));
   };
 
   const handlePasswordChange = async (e) => {
@@ -148,12 +141,8 @@ export default function Profile() {
           
           {/* User Profile summary */}
           <div className="glass-panel p-6 rounded-2xl text-center border border-slate-200/80 dark:border-slate-850">
-            <div className="h-16 w-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-xl font-bold text-emerald-800 dark:text-emerald-400 overflow-hidden mb-3">
-              {user?.profileImage ? (
-                <img src={user.profileImage} alt={user.fullName} className="h-full w-full object-cover" />
-              ) : (
-                <span>{user?.fullName?.charAt(0)}</span>
-              )}
+            <div className="h-16 w-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-700 dark:text-emerald-400 overflow-hidden mb-3">
+              <User className="h-8 w-8" />
             </div>
             <h2 className="text-sm font-bold truncate">{user?.fullName}</h2>
             <p className="text-[10px] text-slate-450 truncate mt-0.5">{user?.email}</p>
@@ -214,12 +203,12 @@ export default function Profile() {
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-bold text-slate-450 uppercase">Profile Picture</label>
+                    <label className="text-[10px] font-bold text-slate-450 uppercase">Account Role (Read Only)</label>
                     <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setProfileImageFile(e.target.files[0])}
-                      className="text-xs bg-transparent"
+                      type="text"
+                      disabled
+                      value={user?.role || 'customer'}
+                      className="py-1.5 px-3 border border-slate-200 rounded-lg text-xs bg-slate-50 dark:border-slate-850 cursor-not-allowed capitalize"
                     />
                   </div>
                 </div>

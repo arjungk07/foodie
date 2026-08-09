@@ -14,12 +14,8 @@ const getCookieOptions = () => ({
 });
 
 const getFrontendRedirectUrl = () => {
-  const rawUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
-  let cleanUrl = rawUrl.replace(/\/+$/, '');
-  if (process.env.NODE_ENV === 'production' && !cleanUrl.endsWith('/foodie')) {
-    return `${cleanUrl}/foodie`;
-  }
-  return cleanUrl;
+  const rawUrl = process.env.CLIENT_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
+  return rawUrl.replace(/\/+$/, '');
 };
 
 // @desc    Register a new user
@@ -79,29 +75,85 @@ export const register = async (req, res, next) => {
 // @route   POST /api/auth/login
 // @access  Public
 export const login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { identifier, email, mobile, password } = req.body;
+
+  const loginInput = String(identifier || email || mobile || "").trim();
 
   try {
-    if (!email || !password) {
+    if (!loginInput || !password) {
       res.status(400);
-      throw new Error('Please provide email and password');
+      throw new Error("Invalid email/phone or password.");
     }
 
-    const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
-      res.status(401);
-      throw new Error('Invalid email or password credentials');
+    const isEmail = loginInput.includes("@");
+
+    let user;
+
+    if (isEmail) {
+      // Email login
+      const cleanEmail = loginInput.toLowerCase();
+      user = await User.findOne({
+        email: cleanEmail,
+      }).select("+password");
+
+      if (!user || !user.password) {
+        res.status(401);
+        throw new Error("Invalid email/phone or password.");
+      }
+
+      const passwordMatch = await user.comparePassword(password);
+      if (!passwordMatch) {
+        res.status(401);
+        throw new Error("Invalid email/phone or password.");
+      }
+    } else {
+      // Mobile login
+      const cleanMobile = loginInput.replace(/\D/g, "");
+
+      const normalizedMobile =
+        cleanMobile.length === 12 && cleanMobile.startsWith("91")
+          ? cleanMobile.substring(2)
+          : cleanMobile;
+
+      // Find all candidates matching mobile variations
+      const candidates = await User.find({
+        $or: [
+          { mobile: loginInput },
+          { mobile: cleanMobile },
+          { mobile: normalizedMobile },
+          { mobile: `+91${normalizedMobile}` },
+          { mobile: `+${cleanMobile}` }
+        ]
+      }).select("+password");
+
+      if (!candidates || candidates.length === 0) {
+        res.status(401);
+        throw new Error("Invalid email/phone or password.");
+      }
+
+      // Check each candidate for a matching password
+      for (const candidate of candidates) {
+        if (candidate.password && (await candidate.comparePassword(password))) {
+          user = candidate;
+          break;
+        }
+      }
+
+      if (!user) {
+        res.status(401);
+        throw new Error("Invalid email/phone or password.");
+      }
     }
 
     // Generate tokens
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    // Save refresh token to user
+    // Save refresh token
     user.refreshToken = refreshToken;
     await user.save();
 
-    // Set refresh token in HTTP-only cookie
+    // Set refresh token cookie
     res.cookie("refreshToken", refreshToken, getCookieOptions());
 
     res.status(200).json({
@@ -114,9 +166,8 @@ export const login = async (req, res, next) => {
         email: user.email,
         mobile: user.mobile,
         role: user.role,
-        profileImage: user.profileImage,
-        isVerified: user.isVerified
-      }
+        isVerified: user.isVerified,
+      },
     });
   } catch (error) {
     next(error);
@@ -429,8 +480,6 @@ export const googleAuth = async (req, res, next) => {
         email: user.email,
         mobile: user.mobile,
         role: user.role,
-        profileImage: user.profileImage || user.avatar,
-        avatar: user.avatar,
         isVerified: user.isVerified
       }
     });
