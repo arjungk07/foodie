@@ -553,7 +553,7 @@ export const googleAuthCallback = async (req, res, next) => {
 
     // Redirect to Foodie frontend
     res.redirect(
-      `${clientUrl}/login?token=${accessToken}`
+      `${clientUrl}/foodie/login?token=${accessToken}`
     );
 
   } catch (error) {
@@ -561,7 +561,7 @@ export const googleAuthCallback = async (req, res, next) => {
     const clientUrl = getFrontendRedirectUrl();
 
     res.redirect(
-      `${clientUrl}/login?error=${encodeURIComponent(
+      `${clientUrl}/foodie/login?error=${encodeURIComponent(
         'Google authentication failed. Please try again.'
       )}`
     );
