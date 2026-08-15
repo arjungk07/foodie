@@ -16,7 +16,7 @@ const categoriesData = [
     description:
       'Discover a healthy and delicious selection of traditional laddoos, millet cookies, rice cookies, healthy cakes, and other bakery snacks. Perfect for students, families, and everyday snacking.',
     image:
-      'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&auto=format&fit=crop',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_Rs-vnyxCy34HTF8qweNTgZtMHlZBAkE-0BYnQl-t5Q&s=10',
   },
   {
     name: 'Mobiles',
@@ -124,153 +124,126 @@ const seedDB = async () => {
 
 
       // 1. Foods
+      // {
+      //   productName: '',
+      //   productDescription: '',
+      //   brand: '',
+      //   category: '',
+      //   subCategory: '',
+      //   price: 0,
+      //   platformFee: 0,
+      //   minimumOrderQuantity: 0,
+      //   packageQuantity: 0,
+      //   sellingPrice: 0,
+      //   stock: 0,
+      //   unit: 'piece',
+      //   tags: '',
+      //   specifications: [{ key: 'value' }],
+      //   discount: 0,
+      //   rating: 0,
+      //   imageUrl: ''
+      // },
 
+      {
+        productName: 'Paruthi Paal',
+        productDescription: 'Paruthi Paal is a traditional South Indian drink prepared from cotton seeds. It is known for its rich, creamy texture and traditional taste. Enjoy it as a wholesome traditional beverage, freshly prepared and suitable for family consumption.',
+        brand: 'sri sastha',
+        categorySlug: 'foods',
+        subCategory: 'Drinks',
+        price: 180,
+        platformFee: 9,
+        minimumOrderQuantity: 5,
+        discount: 0,
+        rating: 0,
+        imageUrl: 'https://res.cloudinary.com/dkufcnnvx/image/upload/v1786381978/Foodie/products/lkmqgd6xdgrddlojzywt.png',
+        stock: 50,
+        unit: 'litre',
+        tags: 'Paruthi Paal',
+      },
 
+      {
+        productName: 'Palm jaggery rice balls (12pcs)',
+        productDescription: 'Palm jaggery rice balls is a delicious traditional snack made with palm jaggery and rice flour. It is a healthy and tasty snack that is perfect for all ages.',
+        brand: "vicky's snacks",
+        categorySlug: 'snacks-bakery',
+        subCategory: 'snacks',
+        price: 50,
+        platformFee: 9,
+        minimumOrderQuantity: 5,
+        discount: 0,
+        rating: 0,
+        imageUrl: 'https://res.cloudinary.com/dkufcnnvx/image/upload/v1786539619/Foodie/products/a3v4m3vhonpkttvdvg2c.jpg',
+        stock: 50,
+        tags: '',
+      },
+      {
+        productName: 'Black puffed rice balls (12pcs)',
+        productDescription: 'Black puffed rice balls is a delicious traditional snack made with black puffed rice and palm jaggery. It is a healthy and tasty snack that is perfect for all ages.',
+        brand: "vicky's snacks",
+        categorySlug: 'snacks-bakery',
+        subCategory: 'snacks',
+        price: 50,
+        platformFee: 9,
+        minimumOrderQuantity: 5,
+        discount: 0,
+        rating: 0,
+        imageUrl: 'https://res.cloudinary.com/dkufcnnvx/image/upload/v1786541773/Foodie/products/dohgoqwjc6eo0zjb6z7x.jpg',
+        stock: 50,
+      },
+      {
+        productName: 'bride groom puffed rice balls (12pcs)',
+        productDescription: 'bride groom puffed rice balls is a delicious traditional snack made with puffed rice and palm jaggery. It is a healthy and tasty snack that is perfect for all ages.',
+        brand: "vicky's snacks",
+        categorySlug: 'snacks-bakery',
+        subCategory: 'snacks',
+        price: 50,
+        platformFee: 9,
+        minimumOrderQuantity: 5,
+        discount: 0,
+        rating: 0,
+        imageUrl: 'https://res.cloudinary.com/dkufcnnvx/image/upload/v1786541773/Foodie/products/dohgoqwjc6eo0zjb6z7x.jpg',
+        stock: 50,
+      },
+      {
+        productName: 'Pepper rice balls (12pcs)',
+        productDescription: 'Pepper rice balls is a delicious traditional snack made with pepper and rice flour. It is a healthy and tasty snack that is perfect for all ages.',
+        brand: 'sri sastha',
+        categorySlug: 'snacks-bakery',
+        subCategory: 'snacks',
+        price: 50,
+        platformFee: 9,
+        minimumOrderQuantity: 5,
+        discount: 0,
+        rating: 0,
+        imageUrl: 'https://res.cloudinary.com/dkufcnnvx/image/upload/v1786542405/Foodie/products/i8zj62qtjkrmoz1zffpw.jpg',
+        stock: 50,
+      },
+      {
+        productName: 'Palm jaggery puffed jower balls (12pcs)',
+        productDescription: 'Palm jaggery puffed jower balls is a delicious traditional snack made with palm jaggery and puffed jower. It is a healthy and tasty snack that is perfect for all ages.',
+        brand: 'sri sastha',
+        categorySlug: 'snacks-bakery',
+        subCategory: 'snacks',
+        price: 50,
+        platformFee: 9,
+        minimumOrderQuantity: 5,
+        discount: 0,
+        rating: 0,
+        imageUrl: 'https://res.cloudinary.com/dkufcnnvx/image/upload/v1786542847/Foodie/products/jojjdbbjpym3gfjyon7a.jpg',
+        stock: 50,
+      },
       {
         productName: 'Madurai Famous Jigarthanda (1 Bottle)',
         brand: 'Famous Jigarthanda',
         categorySlug: 'foods',
         subCategory: 'Drinks',
-        price: 43,
+        price: 55,
         platformFee: 9,
         minimumOrderQuantity: 1,
         discount: 0,
         rating: 4.9,
         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJOOIFgp4fzK5JJ-DMVhz9Q20dyeRSPt54rmfqwfTTfw&s=10'
       },
-      {
-        productName: 'Lay’s Classic Salted Potato Chips (150g)',
-        brand: "Lay's",
-        categorySlug: 'foods',
-        subCategory: 'Snacks',
-        price: 5,
-        platformFee: 2,
-        minimumOrderQuantity: 1,
-        discount: 0,
-        rating: 4.6,
-        imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP0QGdGFaj8vMJvVI-wkbMGqCUtn7jX39d0OEZutecpQ&s=10'
-      },
-      {
-        productName: 'Britannia Choco Chip Cookies (300g)',
-        brand: 'Britannia',
-        categorySlug: 'foods',
-        subCategory: 'Bakery',
-        price: 180,
-        platformFee: 10,
-        minimumOrderQuantity: 20,
-        discount: 19,
-        rating: 4.7,
-        imageUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600'
-      },
-      {
-        productName: 'Veg Cheese Burger',
-        brand: 'Foodie Kitchen',
-        categorySlug: 'foods',
-        subCategory: 'Fast Food',
-        price: 180,
-        platformFee: 8,
-        minimumOrderQuantity: 15,
-        discount: 20,
-        rating: 4.8,
-        imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600'
-      },
-      {
-        productName: 'Belgian Chocolate Brownie',
-        brand: 'Sweet Treats',
-        categorySlug: 'foods',
-        subCategory: 'Desserts',
-        price: 150,
-        platformFee: 12,
-        minimumOrderQuantity: 15,
-        discount: 20,
-        rating: 4.8,
-        imageUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600'
-      },
-      {
-        productName: 'Mixed Dry Fruit Energy Mix (500g)',
-        brand: 'Happilo',
-        categorySlug: 'foods',
-        subCategory: 'Healthy Foods',
-        price: 550,
-        platformFee: 25,
-        minimumOrderQuantity: 10,
-        discount: 22,
-        rating: 4.7,
-        imageUrl: 'https://images.unsplash.com/photo-1505253216365-3ad9f7b5f3c8?w=600'
-      },
-      {
-        productName: 'Instant Masala Oats (1kg)',
-        brand: 'Saffola',
-        categorySlug: 'foods',
-        subCategory: 'Breakfast',
-        price: 320,
-        platformFee: 12,
-        minimumOrderQuantity: 15,
-        discount: 19,
-        rating: 4.6,
-        imageUrl: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=600'
-      },
-      {
-        productName: 'Traditional Milk Mysore Pak (500g)',
-        brand: 'A2B',
-        categorySlug: 'foods',
-        subCategory: 'Sweets',
-        price: 350,
-        platformFee: 15,
-        minimumOrderQuantity: 12,
-        discount: 17,
-        rating: 4.8,
-        imageUrl: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600'
-      },
-      {
-        productName: 'Cadbury Dairy Milk Silk Chocolate (150g)',
-        brand: 'Cadbury',
-        categorySlug: 'foods',
-        subCategory: 'Chocolates',
-        price: 220,
-        platformFee: 11,
-        minimumOrderQuantity: 25,
-        discount: 18,
-        rating: 4.9,
-        imageUrl: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=600'
-      },
-      {
-        productName: 'Parle-G Glucose Biscuits Family Pack',
-        brand: 'Parle',
-        categorySlug: 'foods',
-        subCategory: 'Biscuits',
-        price: 120,
-        platformFee: 9,
-        minimumOrderQuantity: 30,
-        discount: 21,
-        rating: 4.8,
-        imageUrl: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600'
-      },
-      {
-        productName: 'Amul Belgian Chocolate Ice Cream (1L)',
-        brand: 'Amul',
-        categorySlug: 'foods',
-        subCategory: 'Ice Cream',
-        price: 320,
-        platformFee: 14,
-        minimumOrderQuantity: 12,
-        discount: 19,
-        rating: 4.8,
-        imageUrl: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600'
-      },
-      {
-        productName: 'Steamed Veg Momos (10 Pieces)',
-        brand: 'Street Bites',
-        categorySlug: 'foods',
-        subCategory: 'Street Food',
-        price: 140,
-        platformFee: 9,
-        minimumOrderQuantity: 20,
-        discount: 21,
-        rating: 4.7,
-        imageUrl: 'https://images.unsplash.com/photo-1626804475297-41608ea09aeb?w=600'
-      },
-
 
 
       // ===================================================
@@ -363,496 +336,6 @@ const seedDB = async () => {
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpu1YIy7uZhQkwpa67QwRjyDHvtRA2c_y8IW2jSHn7qw&s=10',
       },
 
-      // ===================================================
-      // COOKIE PRODUCTS
-      // ===================================================
-
-
-      // {
-      //   productName: 'Ragi Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Sorghum Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Pearl Millet Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Black Rice Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Honey Foxtail Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 105,
-      //   purchasePrice: 100,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Wheat Salt Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.6,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Red Rice Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 95,
-      //   purchasePrice: 90,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Wheat Choco Chip Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 95,
-      //   purchasePrice: 90,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.9,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Finger Millet Fruit Nuts Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 95,
-      //   purchasePrice: 90,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Wheat Fruit Nuts Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 95,
-      //   purchasePrice: 90,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Kodo Millet Masala Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Jeera Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Multi Millet Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'All Variety Millet Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Pepper Mint Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.6,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Moringa Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.6,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Indian Pennywort Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 95,
-      //   purchasePrice: 90,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.6,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Purple Fruited Pea Eggplant Butter Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 95,
-      //   purchasePrice: 90,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.6,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Barnyard Millet Cookies (100g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cookies',
-      //   price: 85,
-      //   purchasePrice: 80,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 5,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop',
-      // },
-
-
-      // ===================================================
-      // CAKE PRODUCTS
-      // ===================================================
-
-      // {
-      //   productName: 'Black Rice Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Finger Millet Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 190,
-      //   purchasePrice: 180,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Wheat Banana Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 190,
-      //   purchasePrice: 180,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Pearl Millet Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 190,
-      //   purchasePrice: 180,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Red Rice Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Sorghum Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 190,
-      //   purchasePrice: 180,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Kodo Millet Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Foxtail Millet Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Barnyard Millet Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Poongar Rice Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Multi Millet Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.8,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Black Kuruvai Rice Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
-      // {
-      //   productName: 'Traditional Rice Varieties Cake (250g)',
-      //   brand: 'JG Healthy',
-      //   categorySlug: 'snacks-bakery',
-      //   subCategory: 'Cakes',
-      //   price: 210,
-      //   purchasePrice: 200,
-      //   minimumOrderQuantity: 1,
-      //   discount: 0,
-      //   rating: 4.7,
-      //   myProfit: 10,
-      //   imageUrl:
-      //     'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop',
-      // },
-
 
 
     ];
@@ -870,6 +353,9 @@ const seedDB = async () => {
         brand: p.brand,
         SKU,
         price: p.price,
+        packageQuantity: p.packageQuantity || 1,
+        sellingPrice: p.sellingPrice || 0,
+        unit: p.unit || 'piece',
         platformFee: p.platformFee,
         minimumOrderQuantity: p.minimumOrderQuantity,
         stock: 500 + (idx * 15),
@@ -879,12 +365,17 @@ const seedDB = async () => {
         sellerId: seller._id,
         discount: p.discount,
         specifications: [
-          { key: 'Brand Partner', value: p.brand },
-          { key: 'Logistics Package', value: 'Commercial Safe package' },
-          { key: 'Lead Time', value: '2-4 Business Days' },
-          { key: 'Warranty', value: '1 Year Manufacturer Warranty' }
+          { key: 'product name', value: String(p.productName || '') },
+          { key: 'category', value: String(p.categorySlug || '') },
+          { key: 'subCategory', value: String(p.subCategory || '') },
+          { key: 'brand', value: String(p.brand || '') },
+          { key: 'price', value: String(p.price ?? 0) },
+          { key: 'platformFee', value: String(p.platformFee ?? 0) },
+          { key: 'discount', value: String(p.discount ?? 0) },
+          { key: 'stock', value: String(500 + (idx * 15)) },
+          { key: 'minimumOrderQuantity', value: String(p.minimumOrderQuantity ?? 1) }
         ],
-        tags: [p.categorySlug, p.subCategory.toLowerCase(), p.brand.toLowerCase(), 'bulk', 'wholesale'],
+        tags: [p.categorySlug, p.subCategory.toLowerCase(), p.brand.toLowerCase()],
         availability: true,
         featuredProduct: idx % 3 === 0
       };

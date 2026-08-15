@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Store, Mail, Phone, MapPin, Linkedin, Twitter, Facebook } from 'lucide-react';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/logo.png';
 
 export default function Footer() {
   return (
@@ -11,16 +11,13 @@ export default function Footer() {
 
           {/* Brand Info */}
           <div className="flex flex-col gap-4">
-            <Link to="/" className="flex items-center gap-2 font-bold text-xl text-emerald-600 dark:text-emerald-500">
+            <Link to="/" className="flex items-center gap-2 font-bold text-xl ">
               <img
                 src={logoImg}
                 alt="Foodie logo"
-                className="h-17 w-18"
-                style={{
-                  filter:
-                    "brightness(0) saturate(100%) invert(48%) sepia(90%) saturate(600%) hue-rotate(95deg)"
-                }}
-              />              <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie</span>
+                className="h-20 w-20"
+                
+              /> 
             </Link>
             <p className="text-xs leading-relaxed text-slate-500">
               The best place to buy groceries in bulk. Minimum order quantities (MOQ) to connect high-volume distributors with bulk retail discounts.

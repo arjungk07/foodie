@@ -8,11 +8,13 @@ import { loadMe } from './redux/slices/authSlice.js';
 // Components
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
+import BottomNavigation from './components/BottomNavigation.jsx';
 
 // Pages
 import LandingPage from './pages/LandingPage.jsx';
 import ProductList from './pages/ProductList.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
+import CategoriesPage from './pages/CategoriesPage.jsx';
 import Cart from './pages/Cart.jsx';
 import Checkout from './pages/Checkout.jsx';
 import OrderSuccess from './pages/OrderSuccess.jsx';
@@ -36,7 +38,7 @@ import NotFound from './pages/NotFound.jsx';
 function ProtectedRoute({ children, allowedRoles = [] }) {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
-  if (!isAuthenticated) { // here not authenticated go to login page
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -65,7 +67,6 @@ export default function App() {
       token = hashParams.get('token');
     }
 
-    // Only process token in App.jsx if NOT on /login route (Login.jsx handles /login)
     if (token && !window.location.pathname.endsWith('/login')) {
       localStorage.setItem('accessToken', token);
       dispatch(loadMe());
@@ -80,7 +81,7 @@ export default function App() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fafbfd] dark:bg-dark-bg transition-colors duration-200">
+    <div className={`flex flex-col min-h-screen bg-[#fafbfd] dark:bg-dark-bg transition-colors duration-200 ${isAuthenticated ? 'has-bottom-nav' : ''}`}>
       <Navbar />
 
       <div className="flex-1 flex flex-col justify-start">
@@ -89,6 +90,7 @@ export default function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
@@ -125,6 +127,11 @@ export default function App() {
               <Profile />
             </ProtectedRoute>
           } />
+          <Route path="/account" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
           <Route path="/my-orders" element={
             <ProtectedRoute>
               <MyOrders />
@@ -151,6 +158,7 @@ export default function App() {
       </div>
 
       <Footer />
+      <BottomNavigation />
       <ToastContainer position="bottom-right" theme="colored" autoClose={3000} />
     </div>
   );

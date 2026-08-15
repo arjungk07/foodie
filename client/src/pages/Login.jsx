@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Lock, Mail, Eye, EyeOff, User } from 'lucide-react';
 import { loginUser, loadMe, clearErrors } from '../redux/slices/authSlice.js';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/logo.png';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -116,18 +116,14 @@ export default function Login() {
         {/* Header */}
         <div className="text-center flex flex-col items-center">
           <Link to="/" className="inline-flex items-center gap-2 font-bold text-2xl text-emerald-600 dark:text-emerald-500 mb-1">
-            <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie </span>
             <img
               src={logoImg}
               alt="Foodie logo"
-              className="h-14 w-15"
-              style={{
-                filter:
-                  "brightness(0) saturate(100%) invert(48%) sepia(90%) saturate(600%) hue-rotate(95deg)"
-              }}
+              className="h-22 w-22"
+              
             />
           </Link>
-          <h2 className="text-xl dancing-script font-extrabold tracking-wider text-slate-800 dark:text-slate-100">Welcome back to Foodie</h2>
+          <h2 className="text-lg dancing-script font-extrabold tracking-wider text-slate-800 dark:text-slate-100">Welcome back to Foodie</h2>
         </div>
 
         {/* Google OAuth Button */}

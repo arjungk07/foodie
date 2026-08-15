@@ -1,84 +1,69 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@400..700&display=swap');
 @import "tailwindcss";
 
-
 @theme {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --color-foodie-green-deep: #0B542F;
+  --color-foodie-green: #43B649;
+  --color-foodie-green-light: #e8f7e9;
+  --color-foodie-orange: #FF8A00;
+  --color-foodie-orange-light: #fff5e6;
+  --color-foodie-bg: #F7FAF5;
+
   --color-primary-50: #f0fdf4;
   --color-primary-100: #dcfce7;
-  --color-primary-500: #22c55e;
-  --color-primary-600: #16a34a;
-  --color-primary-700: #15803d;
-  --color-primary-800: #166534;
+  --color-primary-500: #43B649;
+  --color-primary-600: #0B542F;
+  --color-primary-700: #083e23;
+  --color-primary-800: #052a17;
 
   --color-dark-bg: #0b0f19;
   --color-dark-card: #151c2c;
-  --color-dark-border: #222d44;
 }
+
+body {
+  font-family: var(--font-sans);
+  background-color: #F7FAF5;
+  color: #17202A;
+  -webkit-tap-highlight-color: transparent;
+}
+
 
 .dancing-script {
   font-family: "Dancing Script", cursive;
   font-optical-sizing: auto;
 }
 
-
-
-/* Custom Glassmorphism styles */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+/* Safe area padding for mobile floating bottom navigation */
+.has-bottom-nav {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }
 
-.dark .glass-panel {
-  background: rgba(21, 28, 44, 0.65);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+@media (min-width: 768px) {
+  .has-bottom-nav {
+    padding-bottom: 2rem;
+  }
 }
 
-/* Shimmer animation for loading skeletons */
+/* Shimmer Loading Animation */
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
   }
-
   100% {
     background-position: 200% 0;
   }
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
+  animation: shimmer 1.5s infinite;
 }
 
 .dark .skeleton-shimmer {
   background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-}
-
-/* Scrollbar styles */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  animation: shimmer 1.5s infinite;
 }

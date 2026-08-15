@@ -193,7 +193,7 @@ export default function ProductDetails() {
               <div className="flex justify-between items-center px-3.5 py-2">
                 <span className="text-slate-500">Platform Fees:</span>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">
-                  {formatINR(currentProduct.platformFee || 0)} 
+                  {formatINR(currentProduct.platformFee || 0)}
                 </span>
               </div>
 

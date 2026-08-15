@@ -4,18 +4,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts, fetchCategories } from '../redux/slices/productSlice.js';
 import ProductCard from '../components/ProductCard.jsx';
 import { CardSkeleton } from '../components/Skeleton.jsx';
-import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Layers } from 'lucide-react';
+import {
+  SlidersHorizontal,
+  ArrowUpDown,
+  RefreshCw,
+  Layers,
+  X,
+  Check,
+  Search,
+  Filter
+} from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 
 export default function ProductList() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { products, categories, totalPages, currentPage, loading, totalProducts } = useSelector(
+  const { products: rawProducts, categories, totalPages, currentPage, loading, totalProducts } = useSelector(
     (state) => state.products
   );
 
-  // Filter Local State
+  // Drawer modal states for mobile explicit user clicks
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isSortDrawerOpen, setIsSortDrawerOpen] = useState(false);
+
+  // Local Filter & Sort state
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [category, setCategory] = useState(searchParams.get('category') || '');
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
@@ -25,20 +38,17 @@ export default function ProductList() {
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // View Mode: Pagination or Infinite Scroll
-  const [viewMode, setViewMode] = useState('pagination'); // 'pagination' | 'infinite'
+  // View Mode: Pagination vs Infinite
+  const [viewMode, setViewMode] = useState('pagination');
   const observerTarget = useRef(null);
   const loadingRef = useRef(false);
 
-  // Load categories once
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  // Synchronize state and trigger search when URL search params change
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
-    // In infinite scroll mode, if URL parameters reset or page is 1, fetch fresh
     if (viewMode === 'infinite' && (!params.page || params.page === '1')) {
       dispatch(fetchProducts({ ...params, append: false }));
       setPage(1);
@@ -50,7 +60,7 @@ export default function ProductList() {
   // Infinite Scroll intersection observer
   useEffect(() => {
     if (viewMode !== 'infinite') return;
-    
+
     const observer = new IntersectionObserver(
       async (entries) => {
         if (entries[0].isIntersecting && !loading && currentPage < totalPages && !loadingRef.current) {
@@ -77,6 +87,23 @@ export default function ProductList() {
     };
   }, [viewMode, currentPage, totalPages, loading, searchParams, dispatch]);
 
+  // Frontend Sorting Backup to guarantee precise Price Low-to-High / High-to-Low
+  const sortedProducts = React.useMemo(() => {
+    if (!rawProducts) return [];
+    let list = [...rawProducts];
+
+    if (sort === 'price-low') {
+      return list.sort((a, b) => (a.price || a.discountPrice || 0) - (b.price || b.discountPrice || 0));
+    }
+    if (sort === 'price-high') {
+      return list.sort((a, b) => (b.price || b.discountPrice || 0) - (a.price || a.discountPrice || 0));
+    }
+    if (sort === 'discount') {
+      return list.sort((a, b) => (b.discount || 0) - (a.discount || 0));
+    }
+    return list;
+  }, [rawProducts, sort]);
+
   const handleApplyFilters = (e) => {
     if (e) e.preventDefault();
     const newParams = {};
@@ -87,19 +114,18 @@ export default function ProductList() {
     if (rating) newParams.rating = rating;
     if (availability) newParams.availability = availability;
     if (sort) newParams.sort = sort;
-    newParams.page = '1'; // Reset page to 1 on filter apply
+    newParams.page = '1';
     setPage(1);
     setSearchParams(newParams);
+    setIsFilterDrawerOpen(false);
   };
 
-
-
-  const handlePageChange = (newPage) => {
-    if (newPage < 1 || newPage > totalPages) return;
-    setPage(newPage);
+  const handleSelectSort = (sortOption) => {
+    setSort(sortOption);
     const newParams = Object.fromEntries(searchParams.entries());
-    newParams.page = newPage.toString();
+    newParams.sort = sortOption;
     setSearchParams(newParams);
+    setIsSortDrawerOpen(false);
   };
 
   const handleClearFilters = () => {
@@ -112,43 +138,207 @@ export default function ProductList() {
     setSort('newest');
     setPage(1);
     setSearchParams({});
+    setIsFilterDrawerOpen(false);
   };
 
+  const sortOptions = [
+    { label: 'Recommended / Newest', value: 'newest' },
+    { label: 'Price: Low to High', value: 'price-low' },
+    { label: 'Price: High to Low', value: 'price-high' },
+    { label: 'Top Rated', value: 'rating' },
+    { label: 'Best Sellers', value: 'popular' },
+    { label: 'Highest Discount', value: 'discount' },
+  ];
+
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 pb-24">
 
       {/* Breadcrumbs */}
-      <Breadcrumbs paths={[{ label: 'Catalog / Bulk Products' }]} />
+      <Breadcrumbs paths={[{ label: 'Food Marketplace Catalog' }]} />
 
-      <div className="flex flex-col md:flex-row gap-8 mt-4">
+      {/* Mobile App Filter & Sort Control Bar */}
+      <div className="flex items-center justify-between gap-2 my-4 bg-white dark:bg-dark-card border border-slate-100 dark:border-slate-800 p-2.5 rounded-2xl shadow-xs sticky top-14 z-30">
+        
+        {/* Filter Drawer Trigger Button */}
+        <button
+          onClick={() => setIsFilterDrawerOpen(true)}
+          className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-foodie-green-light dark:bg-emerald-950/40 text-[#0B542F] dark:text-emerald-400 font-bold text-xs hover:bg-[#d5f2d7] transition-colors cursor-pointer"
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          <span>Filter</span>
+          {(category || minPrice || maxPrice || rating || availability) && (
+            <span className="h-2 w-2 rounded-full bg-foodie-orange" />
+          )}
+        </button>
 
-        {/* 1. Filters Sidebar (Desktop) */}
-        <aside className="w-full md:w-64 shrink-0">
-          <div className="glass-panel p-6 rounded-2xl sticky top-20 flex flex-col gap-5">
+        {/* Sort Drawer Trigger Button */}
+        <button
+          onClick={() => setIsSortDrawerOpen(true)}
+          className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 transition-colors cursor-pointer"
+        >
+          <ArrowUpDown className="h-4 w-4 text-[#0B542F] dark:text-emerald-400" />
+          <span>Sort</span>
+        </button>
 
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
-              <h2 className="text-sm font-bold flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4 text-emerald-500" />
-                <span>Filter Catalog</span>
-              </h2>
+        {/* View Mode Dropdown */}
+        <div className="flex items-center gap-1 border border-slate-200 dark:border-slate-800 px-2 py-1.5 rounded-xl bg-slate-50 dark:bg-dark-bg text-xs">
+          <Layers className="h-3.5 w-3.5 text-slate-400" />
+          <select
+            value={viewMode}
+            onChange={(e) => setViewMode(e.target.value)}
+            className="text-[11px] focus:outline-none bg-transparent cursor-pointer font-semibold"
+          >
+            <option value="pagination">Pages</option>
+            <option value="infinite">Scroll</option>
+          </select>
+        </div>
+
+      </div>
+
+      {/* Active Filter Badges */}
+      {(category || minPrice || maxPrice || availability) && (
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <span className="text-[11px] font-bold text-slate-500">Active Filters:</span>
+          {category && (
+            <span className="inline-flex items-center gap-1 bg-[#0B542F] text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+              Category: {category}
+            </span>
+          )}
+          {(minPrice || maxPrice) && (
+            <span className="inline-flex items-center gap-1 bg-[#0B542F] text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+              Price: ₹{minPrice || 0} - ₹{maxPrice || 'Max'}
+            </span>
+          )}
+          {availability && (
+            <span className="inline-flex items-center gap-1 bg-[#0B542F] text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+              In Stock Only
+            </span>
+          )}
+          <button
+            onClick={handleClearFilters}
+            className="text-[11px] font-bold text-foodie-orange hover:underline cursor-pointer ml-1"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
+
+      {/* Main Catalog Grid */}
+      <main className="flex-1 flex flex-col gap-6">
+
+        {loading && sortedProducts.length === 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="h-64 rounded-2xl bg-white dark:bg-dark-card skeleton-shimmer" />
+            ))}
+          </div>
+        ) : sortedProducts.length === 0 ? (
+          <div className="text-center py-20 bg-white dark:bg-dark-card border border-slate-100 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center gap-3">
+            <Search className="h-10 w-10 text-slate-300 dark:text-slate-600 animate-bounce" />
+            <p className="text-sm font-extrabold text-slate-700 dark:text-slate-300">
+              No products match selected filters
+            </p>
+            <p className="text-xs text-slate-400">
+              Try adjusting your price range or category filter.
+            </p>
+            <button
+              onClick={handleClearFilters}
+              className="mt-2 rounded-2xl bg-[#0B542F] text-white px-5 py-2 text-xs font-bold hover:bg-[#43B649] transition-colors cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              {sortedProducts.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+
+            {viewMode === 'infinite' && (
+              <div ref={observerTarget} className="w-full flex justify-center py-6">
+                {loading && (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="h-64 rounded-2xl bg-white dark:bg-dark-card skeleton-shimmer" />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Pagination Footer */}
+        {viewMode === 'pagination' && !loading && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8 py-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => {
+                setPage(currentPage - 1);
+                const p = Object.fromEntries(searchParams.entries());
+                p.page = (currentPage - 1).toString();
+                setSearchParams(p);
+              }}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold disabled:opacity-40 hover:bg-slate-50 cursor-pointer"
+            >
+              Previous
+            </button>
+
+            <span className="text-xs font-extrabold text-slate-600 dark:text-slate-400 px-2">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => {
+                setPage(currentPage + 1);
+                const p = Object.fromEntries(searchParams.entries());
+                p.page = (currentPage + 1).toString();
+                setSearchParams(p);
+              }}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold disabled:opacity-40 hover:bg-slate-50 cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+      </main>
+
+      {/* ----------------------------------------------------------------- */}
+      {/* FILTER BOTTOM SHEET DRAWER */}
+      {/* ----------------------------------------------------------------- */}
+      {isFilterDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div className="w-full max-w-lg bg-white dark:bg-dark-card rounded-t-3xl p-5 border-t border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto">
+            
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Filter className="h-5 w-5 text-[#0B542F] dark:text-emerald-400" />
+                <span>Filter Products</span>
+              </h3>
               <button
-                onClick={handleClearFilters}
-                className="text-[10px] font-bold text-slate-400 hover:text-emerald-500 flex items-center gap-1 cursor-pointer"
+                onClick={() => setIsFilterDrawerOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
               >
-                <RefreshCw className="h-3 w-3" />
-                Reset
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleApplyFilters} className="flex flex-col gap-4">
-
-              {/* Category */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Category</label>
+            <form onSubmit={handleApplyFilters} className="py-4 space-y-4">
+              
+              {/* Category Filter */}
+              <div>
+                <label className="text-xs font-extrabold text-slate-700 dark:text-slate-300 block mb-1.5">
+                  Category
+                </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-dark-bg focus:outline-none focus:ring-2 focus:ring-[#0B542F]"
                 >
                   <option value="">All Categories</option>
                   {categories.map((c) => (
@@ -157,212 +347,108 @@ export default function ProductList() {
                 </select>
               </div>
 
-              {/* Retail Price Range */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Retail Price (₹)</label>
-                <div className="flex gap-2">
+              {/* Price Range Filter */}
+              <div>
+                <label className="text-xs font-extrabold text-slate-700 dark:text-slate-300 block mb-1.5">
+                  Price Range (₹)
+                </label>
+                <div className="grid grid-cols-2 gap-3">
                   <input
                     type="number"
-                    placeholder="Min"
+                    placeholder="Min Price (₹)"
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
-                    className="w-1/2 py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:outline-none bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
+                    className="p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-dark-bg focus:outline-none focus:ring-2 focus:ring-[#0B542F]"
                   />
                   <input
                     type="number"
-                    placeholder="Max"
+                    placeholder="Max Price (₹)"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
-                    className="w-1/2 py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:outline-none bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
+                    className="p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-dark-bg focus:outline-none focus:ring-2 focus:ring-[#0B542F]"
                   />
                 </div>
               </div>
 
-
-
-              {/* Ratings */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Min. Rating</label>
-                <select
-                  value={rating}
-                  onChange={(e) => setRating(e.target.value)}
-                  className="w-full py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:outline-none bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
-                >
-                  <option value="">Any Rating</option>
-                  <option value="4.5">4.5★ & Above</option>
-                  <option value="4.0">4.0★ & Above</option>
-                  <option value="3.5">3.5★ & Above</option>
-                </select>
-              </div>
-
-              {/* Stock Availability */}
-              <div className="flex items-center gap-2 mt-1">
+              {/* Stock Filter */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300">
+                  In Stock Only
+                </span>
                 <input
                   type="checkbox"
-                  id="availability"
                   checked={availability === 'true'}
                   onChange={(e) => setAvailability(e.target.checked ? 'true' : '')}
-                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4"
+                  className="h-5 w-5 rounded border-slate-300 text-[#0B542F] focus:ring-[#0B542F] cursor-pointer"
                 />
-                <label htmlFor="availability" className="text-xs font-semibold text-slate-650 dark:text-slate-350 cursor-pointer">
-                  In Stock Only
-                </label>
               </div>
 
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 transition-colors mt-2 cursor-pointer"
-              >
-                Apply Filters
-              </button>
+              {/* Drawer Actions */}
+              <div className="flex items-center gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className="flex-1 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  Clear All
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-2xl bg-[#0B542F] hover:bg-[#43B649] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                >
+                  Apply Filters
+                </button>
+              </div>
 
             </form>
 
           </div>
-        </aside>
+        </div>
+      )}
 
-        {/* 2. Main Content Grid */}
-        <main className="flex-1 flex flex-col gap-6">
-
-          {/* Top Control Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-dark-card border border-slate-200/80 dark:border-slate-850 p-4 rounded-2xl shadow-sm transition-colors">
-
-            {/* Left Info */}
-            <div>
-              <p className="text-xs font-medium text-slate-400">Showing catalog</p>
-              <h1 className="text-base font-extrabold text-slate-800 dark:text-white mt-0.5">
-                {loading ? 'Searching offers...' : `${totalProducts} Products Available`}
-              </h1>
+      {/* ----------------------------------------------------------------- */}
+      {/* SORT BOTTOM SHEET DRAWER */}
+      {/* ----------------------------------------------------------------- */}
+      {isSortDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div className="w-full max-w-lg bg-white dark:bg-dark-card rounded-t-3xl p-5 border-t border-slate-200 dark:border-slate-800 max-h-[70vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <ArrowUpDown className="h-5 w-5 text-[#0B542F] dark:text-emerald-400" />
+                <span>Sort Products By</span>
+              </h3>
+              <button
+                onClick={() => setIsSortDrawerOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
-            {/* Right Controls */}
-            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-              
-              {/* View Mode Toggle */}
-              <div className="flex items-center gap-1 border border-slate-200 dark:border-slate-850 px-2.5 py-1.5 rounded-lg bg-slate-50/50 dark:bg-dark-bg">
-                <Layers className="h-3.5 w-3.5 text-slate-400" />
-                <select
-                  value={viewMode}
-                  onChange={(e) => setViewMode(e.target.value)}
-                  className="text-xs focus:outline-none bg-transparent cursor-pointer font-medium"
-                >
-                  <option value="pagination">Pagination</option>
-                  <option value="infinite">Infinite Scroll</option>
-                </select>
-              </div>
-               
-              {/* <div className="flex-1 sm:flex-none relative">
-                <input
-                  type="text"
-                  placeholder="Refine search..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 w-full sm:w-48 text-xs rounded-lg border border-slate-200 focus:outline-none bg-slate-50/50 dark:bg-dark-bg dark:border-slate-800"
-                />
-                <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-slate-400" />
-              </div> */}
-
-              {/* Sorting Dropdown */}
-              <div className="flex items-center  border border-slate-200 dark:border-slate-800 px-1.5 py-1.5 rounded-lg bg-slate-50/50 dark:bg-dark-bg">
-                <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
-                <select
-                  value={sort}
-                  onChange={(e) => {
-                    setSort(e.target.value);
-                    const newParams = Object.fromEntries(searchParams.entries());
-                    newParams.sort = e.target.value;
-                    setSearchParams(newParams);
-                  }}
-                  className="text-xs focus:outline-none bg-transparent"
-                >
-                  <option value="newest">Newest Offers</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Top Rated</option>
-                  <option value="popular">Best Sellers</option>
-                </select>
-              </div>
+            <div className="py-3 space-y-1">
+              {sortOptions.map((option) => {
+                const isSelected = sort === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => handleSelectSort(option.value)}
+                    className={`w-full flex items-center justify-between p-3 rounded-2xl text-xs font-bold text-left transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-foodie-green-light dark:bg-emerald-950/40 text-[#0B542F] dark:text-emerald-400'
+                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    <span>{option.label}</span>
+                    {isSelected && <Check className="h-4 w-4 text-[#0B542F] dark:text-emerald-400" />}
+                  </button>
+                );
+              })}
             </div>
 
           </div>
-
-          {/* Catalog grid */}
-          {loading && products.length === 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <CardSkeleton key={i} />
-              ))}
-            </div>
-          ) : products.length === 0 ? (
-            <div className="text-center py-20 bg-white dark:bg-dark-card border border-slate-200/80 dark:border-slate-850 rounded-2xl flex flex-col items-center justify-center gap-4">
-              <Search className="h-10 w-10 text-slate-350 dark:text-slate-600 animate-bounce" />
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No products found matching filters</p>
-              <p className="text-xs text-slate-400">Try clearing query terms or price limits to refresh the catalog.</p>
-              <button
-                onClick={handleClearFilters}
-                className="mt-2 rounded-xl border border-slate-200 px-5 py-2 text-xs font-semibold hover:bg-slate-50 dark:border-slate-800"
-              >
-                Clear All filters
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product._id} product={product} />
-                ))}
-              </div>
-
-              {/* Infinite Scroll Loader Target */}
-              {viewMode === 'infinite' && (
-                <div ref={observerTarget} className="w-full flex justify-center py-6">
-                  {loading && (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full animate-pulse">
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <CardSkeleton key={i} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Pagination Footer */}
-          {viewMode === 'pagination' && !loading && totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8 py-4">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                className="px-3.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold disabled:opacity-40 hover:bg-slate-50 dark:border-slate-800 cursor-pointer"
-              >
-                Previous
-              </button>
-
-              <div className="flex gap-1 text-xs">
-                {Array.from({ length: totalPages }).map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handlePageChange(idx + 1)}
-                    className={`h-8 w-8 rounded-lg font-semibold cursor-pointer ${currentPage === idx + 1 ? 'bg-emerald-600 text-white' : 'border border-slate-200 hover:bg-slate-50 dark:border-slate-800'}`}
-                  >
-                    {idx + 1}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="px-3.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold disabled:opacity-40 hover:bg-slate-50 dark:border-slate-800 cursor-pointer"
-              >
-                Next
-              </button>
-            </div>
-          )}
-
-        </main>
-      </div>
+        </div>
+      )}
 
     </div>
   );

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Lock, Mail, Store, User, Phone, CheckCircle2 } from 'lucide-react';
 import { registerUser, clearErrors } from '../redux/slices/authSlice.js';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/logo.png';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -59,15 +59,11 @@ export default function Register() {
         {/* Header */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-2 font-bold text-2xl text-emerald-600 dark:text-emerald-500 mb-2">
-            <span className='dancing-script text-3xl md:text-4xl font-extrabold'>foodie</span>
             <img
               src={logoImg}
               alt="Foodie logo"
-              className="h-17 w-18"
-              style={{
-                filter:
-                  "brightness(0) saturate(100%) invert(48%) sepia(90%) saturate(1000%) hue-rotate(90deg)"
-              }}
+              className="w-22 h-22"
+              
             />
           </Link>
           <h2 className="dancing-script text-2xl font-bold tracking-tight">Register</h2>

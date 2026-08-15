@@ -131,14 +131,14 @@ export default function Profile() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-      
+
       <Breadcrumbs paths={[{ label: 'My Account' }]} />
 
       <div className="flex flex-col md:flex-row gap-8 mt-6">
-        
+
         {/* Left Column - Navigation Cards */}
         <aside className="w-full md:w-64 shrink-0 flex flex-col gap-4">
-          
+
           {/* User Profile summary */}
           <div className="glass-panel p-6 rounded-2xl text-center border border-slate-200/80 dark:border-slate-850">
             <div className="h-16 w-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-700 dark:text-emerald-400 overflow-hidden mb-3">
@@ -180,11 +180,11 @@ export default function Profile() {
 
         {/* Right Column - Work Panes */}
         <main className="flex-1 bg-white dark:bg-dark-card border border-slate-200/80 dark:border-slate-850 p-6 sm:p-8 rounded-3xl transition-colors min-h-[50vh]">
-          
+
           {/* Tab 1: Profile Details */}
           {activeTab === 'details' && (
             <div className="flex flex-col gap-8">
-              
+
               {/* Profile Details Edit Form */}
               <form onSubmit={handleProfileUpdate} className="flex flex-col gap-4">
                 <h3 className="text-sm font-bold flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-2">
@@ -292,7 +292,7 @@ export default function Profile() {
           {/* Tab 2: Addresses list & CRUD */}
           {activeTab === 'addresses' && (
             <div className="flex flex-col gap-6">
-              
+
               <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-sm font-bold flex items-center gap-2">
                   <MapPin className="h-4.5 w-4.5 text-emerald-500" />
@@ -312,7 +312,7 @@ export default function Profile() {
               {showAddressForm && (
                 <form onSubmit={handleAddAddress} className="bg-slate-50/50 dark:bg-dark-bg p-5 rounded-2xl border border-slate-200/80 dark:border-slate-850 flex flex-col gap-3">
                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">New Address Profile</h4>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
                       type="text"
@@ -407,8 +407,8 @@ export default function Profile() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {addresses.map((addr) => (
-                    <div 
-                      key={addr._id} 
+                    <div
+                      key={addr._id}
                       className={`relative p-4 rounded-2xl border border-slate-200 bg-white dark:border-slate-850 dark:bg-dark-card/50 flex justify-between items-start ${addr.isDefault ? 'border-emerald-500' : ''}`}
                     >
                       <div className="text-xs">
@@ -424,7 +424,7 @@ export default function Profile() {
                         <p className="text-slate-500">{addr.city}, {addr.state} {addr.postalCode}</p>
                         <p className="text-slate-550 mt-1 font-semibold">Ph: {addr.mobile}</p>
                       </div>
-                      
+
                       <button
                         onClick={() => handleDeleteAddress(addr._id)}
                         className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
@@ -442,7 +442,7 @@ export default function Profile() {
           {/* Tab 3: Sourcing Order Logs */}
           {activeTab === 'orders' && (
             <div className="flex flex-col gap-6">
-              
+
               <h3 className="text-sm font-bold flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <ClipboardList className="h-4.5 w-4.5 text-emerald-500" />
                 <span>Wholesale Purchase Records</span>
@@ -457,8 +457,8 @@ export default function Profile() {
               ) : (
                 <div className="flex flex-col gap-4">
                   {orders.map((order) => (
-                    <div 
-                      key={order._id} 
+                    <div
+                      key={order._id}
                       className="p-5 border border-slate-200/80 bg-white dark:border-slate-850 dark:bg-dark-card/50 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:shadow-sm"
                     >
                       <div className="text-xs flex flex-col gap-1">
