@@ -454,7 +454,7 @@ export default function SellerDashboard() {
       </aside>
 
       {/* ─── Mobile top bar ──────────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex">
+      <div className="fixed bottom-0 left-0 right-0 z-99 h-20 md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex">
         {navItems.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
