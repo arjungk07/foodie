@@ -311,7 +311,7 @@ export default function ProductList() {
       {/* FILTER BOTTOM SHEET DRAWER */}
       {/* ----------------------------------------------------------------- */}
       {isFilterDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-fadeIn">
+        <div className="fixed inset-0 z-99 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="w-full max-w-lg bg-white dark:bg-dark-card rounded-t-3xl p-5 border-t border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto">
             
             {/* Drawer Header */}
@@ -410,7 +410,7 @@ export default function ProductList() {
       {/* SORT BOTTOM SHEET DRAWER */}
       {/* ----------------------------------------------------------------- */}
       {isSortDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-fadeIn">
+        <div className="fixed inset-0 z-99 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="w-full max-w-lg bg-white dark:bg-dark-card rounded-t-3xl p-5 border-t border-slate-200 dark:border-slate-800 max-h-[70vh] overflow-y-auto">
             
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
