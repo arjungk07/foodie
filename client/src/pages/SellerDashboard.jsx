@@ -454,7 +454,7 @@ export default function SellerDashboard() {
       </aside>
 
       {/* ─── Mobile top bar ──────────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex">
+      <div className="fixed bottom-0 left-0 right-0 z-99 h-20 md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex">
         {navItems.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -1062,12 +1062,10 @@ export default function SellerDashboard() {
                           <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
                             <div className="flex flex-col gap-1.5 min-w-45">
                               {o.items?.map((item, idx) => {
-                                const fee = item.platformFee ?? item.productId?.platformFee ?? 0;
                                 return (
                                   <div key={idx} className="text-[11px] leading-tight border-b border-slate-100 dark:border-slate-800/60 pb-1 last:border-0">
-                                    <p className="font-bold text-slate-800 dark:text-slate-200">{item.productName || item.productId?.productName}</p>
-                                    <p className="text-slate-500">Price: ₹{item.price} | Qty: {item.quantity}</p>
-                                    <p className="text-emerald-600 font-semibold">Fee: ₹{fee} × {item.quantity} = ₹{fee * item.quantity}</p>
+                                    <p className="pt-1 font-bold text-slate-800 dark:text-slate-200">{item.productName || item.productId?.productName}</p>
+                                    <p className="pt-1 text-slate-500">Price: ₹{item.price} | Qty: {item.quantity}</p>
                                   </div>
                                 );
                               })}

@@ -9,7 +9,7 @@ export default function BottomNavigation() {
   const { items } = useSelector((state) => state.cart);
 
   // If user is NOT logged in, hide bottom navigation completely
-  if (!isAuthenticated) {
+  if (!isAuthenticated ) {
     return null;
   }
 
