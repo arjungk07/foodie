@@ -130,7 +130,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <div className="max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
 
       <Breadcrumbs paths={[{ label: 'My Account' }]} />
 
