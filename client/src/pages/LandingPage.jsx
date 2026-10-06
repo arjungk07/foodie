@@ -54,7 +54,7 @@ export default function LandingPage() {
       bgGradient: 'from-[#083e23] via-[#0B542F] to-[#2e7d32]',
       accentColor: '#FF8A00',
       image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRObIh02ve38_ZIGHnN6IXFFnZBA9uNfy7_EqlDIA2Klg&s=10',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR5YsS99uMuhK5Z-Jp4vcsm_V-ZWvqycgcleK-CSkGZg&s=10',
     },
 
     {
@@ -67,7 +67,7 @@ export default function LandingPage() {
       bgGradient: 'from-[#0B542F] via-[#0D6338] to-[#43B649]',
       accentColor: '#FF8A00',
       image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsGHhwOwymW6LjTWS-dZ4CmXdqgUVn7n6cKjDrercUWQ&s=10',
+        'https://t3.ftcdn.net/jpg/03/73/98/10/360_F_373981053_N6EoI6U0PhxZjvgDLuHgEevpjX74wvnA.jpg',
     },
 
     {
@@ -80,7 +80,7 @@ export default function LandingPage() {
       bgGradient: 'from-[#D35400] via-[#FF8A00] to-[#F39C12]',
       accentColor: '#FFFFFF',
       image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8JT57cH_9qWUPv0RwQaZI4PxmpjPD6y_9gPrv-fw_eQ&s=10',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjnNWBWCMt9JHOUfEaTkzs5uGJ61oDpx-ii-ASfZT9nCjHwg2dk8wKcqM&s=10',
     },
   ];
 
@@ -239,7 +239,7 @@ export default function LandingPage() {
             onMouseLeave={() => setIsPaused(false)}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
-            className="group relative min-h-90 overflow-hidden rounded-[28px] shadow-xl lg:min-h-100"
+            className="group relative min-h-90 overflow-hidden rounded-[28px] shadow-xl lg:min-h-117"
           >
             {/* BACKGROUND SLIDES */}
             {heroBanners.map((banner, index) => {
